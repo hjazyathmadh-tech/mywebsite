@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - مطعم الحجازيات</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Import Firebase from firebase.js
+        import { app, auth } from "./firebase.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
+        import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+        
+
+        
+        // Initialize Analytics
+        const analytics = getAnalytics(app);
+        const provider = new GoogleAuthProvider();
+        
+        // Make auth and provider available globally
+        window.firebaseAuth = auth;
+        window.googleProvider = provider;
+        window.signInWithPopup = signInWithPopup;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+    </script>
+    
+    <style>
+        /* صفحة تسجيل الدخول */
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                url("https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80");
+            background-size: cover;
+            background-position: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 30px;
+            text-align: center;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .login-logo {
+            margin-bottom: 30px;
+        }
+
+        .login-logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .login-logo h1 span {
+            color: #e74c3c;
+        }
+
+        .login-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .login-tab {
+            flex: 1;
+            padding: 15px;
+            font-weight: 500;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .login-tab.active {
+            color: #e74c3c;
+            border-bottom-color: #e74c3c;
+        }
+
+        .login-form {
+            display: none;
+        }
+
+        .login-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+            text-align: right;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: "Tajawal", sans-serif;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-align: right;
+        }
+
+        .form-group input:focus {
+            border-color: #e74c3c;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+
+        .remember-me input {
+            margin-left: 8px;
+        }
+
+        .forgot-password {
+            color: #e74c3c;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: "Tajawal", sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(to right, #c0392b, #a93226);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .social-login {
+            margin-top: 30px;
+        }
+
+        .social-login p {
+            color: #777;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .social-login p::before,
+        .social-login p::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background-color: #eee;
+        }
+
+        .social-login p::before {
+            right: 0;
+        }
+
+        .social-login p::after {
+            left: 0;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            background-color: white;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: "Tajawal", sans-serif;
+            font-size: 14px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .social-btn:hover {
+            background-color: #f8f8f8;
+            transform: translateY(-2px);
+        }
+
+        .social-btn i {
+            font-size: 18px;
+        }
+
+        .facebook-btn {
+            color: #1877f2;
+            border-color: #1877f2;
+        }
+
+        .google-btn {
+            color: #ea4335;
+            border-color: #ea4335;
+        }
+
+        .signup-link {
+            margin-top: 20px;
+            color: #555;
+        }
+
+        .signup-link a {
+            color: #e74c3c;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .skip-login {
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .skip-login a {
+            color: #777;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        
+        .skip-login a:hover {
+            color: #333;
+            background-color: #f9f9f9;
+            border-color: #ccc;
+        }
+
+        @media (max-width: 576px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+
+            .login-logo h1 {
+                font-size: 24px;
+            }
+
+            .form-options {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-container">
+            <div class="login-logo">
+                <h1>مطعم <span>الحجازيات</span></h1>
+            </div>
+
+            <div class="login-tabs">
+                <div class="login-tab active" data-tab="login">تسجيل الدخول</div>
+                <div class="login-tab" data-tab="signup">إنشاء حساب</div>
+            </div>
+
+            <!-- تسجيل الدخول -->
+            <form class="login-form active" id="loginForm">
+                <div class="form-group">
+                    <label for="login-email">البريد الإلكتروني</label>
+                    <input type="email" id="login-email" placeholder="أدخل بريدك الإلكتروني" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">كلمة المرور</label>
+                    <input type="password" id="login-password" placeholder="أدخل كلمة المرور" required>
+                </div>
+                <div class="form-options">
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember">
+                        <label for="remember">تذكرني</label>
+                    </div>
+                    <a href="#" class="forgot-password">نسيت كلمة المرور؟</a>
+                </div>
+                <button type="submit" class="login-btn">تسجيل الدخول</button>
+            </form>
+
+            <!-- إنشاء حساب -->
+            <form class="login-form" id="signupForm">
+                <div class="form-group">
+                    <label for="signup-name">الاسم الكامل</label>
+                    <input type="text" id="signup-name" placeholder="أدخل اسمك الكامل" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">البريد الإلكتروني</label>
+                    <input type="email" id="signup-email" placeholder="أدخل بريدك الإلكتروني" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-phone">رقم الهاتف</label>
+                    <input type="tel" id="signup-phone" placeholder="أدخل رقم هاتفك" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">كلمة المرور</label>
+                    <input type="password" id="signup-password" placeholder="أنشئ كلمة مرور" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-confirm-password">تأكيد كلمة المرور</label>
+                    <input type="password" id="signup-confirm-password" placeholder="أعد إدخال كلمة المرور" required>
+                </div>
+                <button type="submit" class="login-btn">إنشاء حساب</button>
+            </form>
+
+            <div class="social-login">
+                <p>أو سجل الدخول باستخدام</p>
+                <div class="social-buttons">
+                    <a href="#" class="social-btn facebook-btn">
+                        <i class="fab fa-facebook-f"></i>
+                        فيسبوك
+                    </a>
+                    <a href="#" class="social-btn google-btn">
+                        <i class="fab fa-google"></i>
+                        جوجل
+                    </a>
+                </div>
+            </div>
+
+            <div class="signup-link">
+                ليس لديك حساب؟ <a href="#" id="showSignup">أنشئ حساب جديد</a>
+            </div>
+            
+            <div class="skip-login">
+                <a href="#" id="skipLogin">تخطي تسجيل الدخول</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // تبويبات تسجيل الدخول وإنشاء الحساب
+            const loginTabs = document.querySelectorAll('.login-tab');
+            const loginForms = document.querySelectorAll('.login-form');
+            const showSignupLink = document.getElementById('showSignup');
+
+            loginTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+
+                    // تحديث التبويب النشط
+                    loginTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    // تحديث النموذج النشط
+                    loginForms.forEach(form => {
+                        form.classList.remove('active');
+                        if (form.id === `${tabId}Form`) {
+                            form.classList.add('active');
+                        }
+                    });
+                });
+            });
+
+            // رابط عرض إنشاء الحساب
+            showSignupLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginTabs.forEach(t => t.classList.remove('active'));
+                loginTabs[1].classList.add('active');
+
+                loginForms.forEach(form => {
+                    form.classList.remove('active');
+                    if (form.id === 'signupForm') {
+                        form.classList.add('active');
+                    }
+                });
+            });
+
+            // معالجة نموذج تسجيل الدخول
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+
+                // تسجيل الدخول باستخدام Firebase
+                window.signInWithEmailAndPassword(window.firebaseAuth, email, password)
+                    .then((userCredential) => {
+                        // تم تسجيل الدخول بنجاح
+                        const user = userCredential.user;
+                        
+                        // تخزين حالة تسجيل الدخول في localStorage
+                        localStorage.setItem('isLoggedIn', 'true');
+                        localStorage.setItem('userEmail', user.email);
+                        localStorage.setItem('userId', user.uid);
+                        
+                        // الانتقال إلى الصفحة الرئيسية
+                        window.location.href = 'index.html';
+                    })
+                    .catch((error) => {
+                        // حدث خطأ
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        
+                        // عرض رسالة الخطأ
+                        alert('خطأ في تسجيل الدخول: ' + errorMessage);
+                    });
+            });
+
+            // معالجة نموذج إنشاء الحساب
+            document.getElementById('signupForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const name = document.getElementById('signup-name').value;
+                const email = document.getElementById('signup-email').value;
+                const phone = document.getElementById('signup-phone').value;
+                const password = document.getElementById('signup-password').value;
+                const confirmPassword = document.getElementById('signup-confirm-password').value;
+
+                // التحقق من تطابق كلمتي المرور
+                if (password !== confirmPassword) {
+                    alert('كلمتا المرور غير متطابقتين');
+                    return;
+                }
+
+                // إنشاء حساب باستخدام Firebase
+                window.createUserWithEmailAndPassword(window.firebaseAuth, email, password)
+                    .then((userCredential) => {
+                        // تم إنشاء الحساب بنجاح
+                        const user = userCredential.user;
+                        
+                        // تخزين بيانات المستخدم في localStorage
+                        localStorage.setItem('isLoggedIn', 'true');
+                        localStorage.setItem('userName', name);
+                        localStorage.setItem('userEmail', user.email);
+                        localStorage.setItem('userPhone', phone);
+                        localStorage.setItem('userId', user.uid);
+                        
+                        // الانتقال إلى الصفحة الرئيسية
+                        window.location.href = 'index.html';
+                    })
+                    .catch((error) => {
+                        // حدث خطأ
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        
+                        // عرض رسالة الخطأ
+                        alert('خطأ في إنشاء الحساب: ' + errorMessage);
+                    });
+            });
+            
+            // تسجيل الدخول باستخدام جوجل
+            document.querySelector('.google-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                window.signInWithPopup(window.firebaseAuth, window.googleProvider)
+                    .then((result) => {
+                        // تم تسجيل الدخول بنجاح
+                        const user = result.user;
+                        
+                        // تخزين حالة تسجيل الدخول في localStorage
+                        localStorage.setItem('isLoggedIn', 'true');
+                        localStorage.setItem('userEmail', user.email);
+                        localStorage.setItem('userId', user.uid);
+                        
+                        // محاولة الحصول على اسم المستخدم
+                        if (user.displayName) {
+                            localStorage.setItem('userName', user.displayName);
+                        } else {
+                            localStorage.setItem('userName', 'مستخدم جوجل');
+                        }
+                        
+                        // الانتقال إلى الصفحة الرئيسية
+                        window.location.href = 'index.html';
+                    })
+                    .catch((error) => {
+                        // حدث خطأ
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        
+                        // عرض رسالة الخطأ
+                        alert('خطأ في تسجيل الدخول عبر جوجل: ' + errorMessage);
+                    });
+            });
+            
+            // معالج حدث زر التخطي
+            document.getElementById('skipLogin').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // تعيين المستخدم كزائر
+                localStorage.setItem('isGuest', 'true');
+                localStorage.setItem('isLoggedIn', 'false');
+                
+                // الانتقال إلى الصفحة الرئيسية
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تتبع الطلب - مطعم الحجازيات</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+
+    <style>
+        /* Custom CSS for Order Tracking Page */
+        .tracking-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            color: #222;
+            margin-bottom: 10px;
+        }
+
+        .tracking-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .map-section {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            height: 500px;
+        }
+
+        .map-container {
+            height: 100%;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .order-info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+        }
+
+        .info-card h2 {
+            font-size: 20px;
+            color: #222;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .order-status-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .order-status {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 500;
+            margin-left: 15px;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-accepted {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-in_progress {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+
+        .status-delivered {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .eta-container {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .eta-container i {
+            color: #e74c3c;
+            margin-left: 10px;
+            font-size: 20px;
+        }
+
+        .eta-text {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .eta-time {
+            color: #e74c3c;
+            font-weight: 700;
+            margin-right: 5px;
+        }
+
+        .driver-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .driver-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-left: 15px;
+            background-color: #f1f1f1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .driver-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .driver-avatar i {
+            font-size: 24px;
+            color: #ccc;
+        }
+
+        .driver-details h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .driver-details p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .contact-driver {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .contact-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .call-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .call-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .message-btn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .message-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .order-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .detail-item {
+            margin-bottom: 10px;
+        }
+
+        .detail-label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #f1f1f1;
+            color: #333;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 500;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background-color: #e1e1e1;
+        }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            color: #666;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #e74c3c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .error-container i {
+            font-size: 48px;
+            color: #e74c3c;
+            margin-bottom: 15px;
+        }
+
+        .error-container h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .tracking-content {
+                grid-template-columns: 1fr;
+            }
+
+            .map-section {
+                height: 350px;
+            }
+
+            .order-details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>شاورما <span>الحجازيات</span></h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">الرئيسية</a></li>
+                    <li><a href="index.html#menu">قائمة الطعام</a></li>
+                    <li><a href="my-orders.html">طلباتي</a></li>
+                    <li><a href="#" class="cart-btn"><i class="fas fa-shopping-cart"></i> السلة <span class="cart-count">0</span></a></li>
+                    <li id="user-menu-item" style="display: none;">
+                        <div class="user-menu">
+                            <span class="user-name"><i class="fas fa-user"></i> <span id="display-name">مستخدم</span></span>
+                            <div class="user-dropdown">
+                                <a href="#" id="my-account">حسابي</a>
+                                <a href="my-orders.html">طلباتي</a>
+                                <a href="#" id="logout-btn">تسجيل الخروج</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+            <div class="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+            <!-- Mobile Menu Sidebar -->
+            <div class="mobile-menu-sidebar">
+                <div class="mobile-menu-close">
+                    <i class="fas fa-times"></i>
+                </div>
+                <div class="mobile-menu-content">
+                    <!-- سيتم نسخ عناصر القائمة هنا عبر JavaScript -->
+                </div>
+            </div>
+            <!-- Mobile Menu Overlay -->
+            <div class="mobile-menu-overlay"></div>
+        </div>
+    </header>
+
+    <!-- Order Tracking Content -->
+    <div class="tracking-container">
+        <a href="my-orders.html" class="back-btn">
+            <i class="fas fa-arrow-right"></i>
+            العودة لطلباتي
+        </a>
+
+        <div class="page-header">
+            <h1>تتبع الطلب</h1>
+        </div>
+
+        <div class="tracking-content">
+            <!-- Map Section -->
+            <div class="map-section">
+                <div class="map-container" id="map">
+                    <!-- Map will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Order Info Section -->
+            <div class="order-info-section">
+                <!-- Order Status Card -->
+                <div class="info-card">
+                    <h2>حالة الطلب</h2>
+                    <div id="order-status-container">
+                        <!-- Order status will be loaded here -->
+                    </div>
+                    <div id="eta-container" class="eta-container" style="display: none;">
+                        <i class="fas fa-clock"></i>
+                        <div class="eta-text">الوقت المتوقع للوصول: <span class="eta-time" id="eta-time">--</span></div>
+                    </div>
+                </div>
+
+                <!-- Driver Info Card -->
+                <div class="info-card" id="driver-info-card" style="display: none;">
+                    <h2>معلومات السائق</h2>
+                    <div id="driver-info">
+                        <!-- Driver info will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Order Details Card -->
+                <div class="info-card">
+                    <h2>تفاصيل الطلب</h2>
+                    <div id="order-details">
+                        <!-- Order details will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script type="module" src="firebase.js"></script>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+
+    <!-- Order Tracking Script -->
+    <script type="module" src="order-tracking.js"></script>
+</body>
+</html>

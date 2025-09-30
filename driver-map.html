@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خريطة التوصيل - مطعم الحجازيات</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+
+    <style>
+        :root {
+            --primary-color: #e74c3c;
+            --secondary-color: #c0392b;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f8f9fa;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .header .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .map-container {
+            height: calc(100vh - 70px);
+            width: 100%;
+            position: relative;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        .order-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .order-info h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .order-info p {
+            margin-bottom: 8px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .order-info i {
+            margin-left: 8px;
+            color: var(--primary-color);
+        }
+
+        .complete-order-btn {
+            position: absolute;
+            top: 90px;
+            left: 20px;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 20px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .complete-order-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background-color: white;
+            color: #333;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            font-family: 'Tajawal', sans-serif;
+            max-width: 80%;
+        }
+
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .notification.success {
+            border-right: 4px solid #2ecc71;
+        }
+
+        .notification.error {
+            border-right: 4px solid #e74c3c;
+        }
+
+        .notification.warning {
+            border-right: 4px solid #f39c12;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.2rem;
+            }
+
+            .order-info {
+                left: 10px;
+                right: 10px;
+                bottom: 10px;
+                padding: 12px;
+            }
+
+            .complete-order-btn {
+                top: 80px;
+                left: 10px;
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>خريطة التوصيل</h1>
+        <button class="back-btn" id="backBtn">
+            <i class="fas fa-arrow-right"></i>
+            <span>العودة</span>
+        </button>
+    </div>
+
+    <div class="map-container">
+        <div id="map"></div>
+
+        <div class="order-info" id="orderInfo">
+            <h3>معلومات الطلب</h3>
+            <p><i class="fas fa-user"></i> <span id="customerName">-</span></p>
+            <p><i class="fas fa-phone"></i> <span id="customerPhone">-</span></p>
+            <p><i class="fas fa-map-marker-alt"></i> <span id="customerAddress">-</span></p>
+        </div>
+
+        <button class="complete-order-btn" id="completeOrderBtn">
+            <i class="fas fa-check-circle"></i>
+            <span>إنهاء الطلب</span>
+        </button>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Firebase -->
+    <script type="module" src="firebase.js"></script>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+
+    <!-- Driver Map Script -->
+    <script type="module" src="driver-map.js"></script>
+</body>
+</html>

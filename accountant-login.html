@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل دخول المحاسب - حجازيات</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ====== نفس تنسيقاتك السابقة مع تعديلات طفيفة ====== */
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+    }
+    .accountant-login-page {
+      background-image: url('https://images.unsplash.com/photo-1556912167-f556f1f39fdf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80');
+      background-size: cover;
+      background-position: center;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
+    .accountant-login-page::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      z-index: 1;
+    }
+    .accountant-login-container {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      padding: 30px;
+      position: relative;
+      z-index: 2;
+    }
+    .accountant-login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .accountant-login-header h2 {
+      color: #333;
+      margin: 0 0 10px;
+      font-size: 28px;
+    }
+    .accountant-login-header p {
+      color: #666;
+      margin: 0;
+      font-size: 16px;
+    }
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+    .form-group input:focus {
+      border-color: #007bff;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+    }
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+    .login-btn:hover { background-color: #0056b3; }
+    .back-to-main {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .back-to-main a {
+      color: #007bff;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .back-to-main a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="accountant-login-page">
+    <div class="accountant-login-container">
+      <div class="accountant-login-header">
+        <h2>تسجيل دخول المحاسب</h2>
+        <p>يرجى إدخال بيانات الدخول الخاصة بالمحاسب</p>
+      </div>
+
+      <form id="accountantLoginForm">
+        <div class="form-group">
+          <label for="accountant-email">البريد الإلكتروني</label>
+          <input type="email" id="accountant-email" placeholder="أدخل بريدك الإلكتروني" required>
+        </div>
+
+        <div class="form-group">
+          <label for="accountant-password">كلمة المرور</label>
+          <input type="password" id="accountant-password" placeholder="أدخل كلمة المرور" required>
+        </div>
+
+        <button type="submit" class="login-btn">تسجيل الدخول</button>
+      </form>
+
+      <div class="back-to-main">
+        <a href="index.html">العودة إلى الصفحة الرئيسية</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase & Logic -->
+  <!-- نستخدم type="module" عشان نقدر نستورد من firebase.js -->
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="accountant-login.js"></script>
+</body>
+</html>

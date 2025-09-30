@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شاورما الحجازيات - الموقع الرسمي</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>شاورما <span>الحجازيات</span></h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#home" class="active">الرئيسية</a></li>
+                    <li><a href="#about">من نحن</a></li>
+                    <li><a href="#menu">قائمة الطعام</a></li>
+                    <li><a href="#offers">العروض</a></li>
+                    <li><a href="#contact">تواصل معنا</a></li>
+                    <li><a href="#" class="cart-btn"><i class="fas fa-shopping-cart"></i> السلة <span class="cart-count">0</span></a></li>
+                    <li>
+                        <a href="accountant-login.html">دخول المحاسب</a>
+                    </li>
+                    <li>
+                        <a href="driver-login.html">دخول السائق</a>
+                    </li>
+                    <li id="user-menu-item" style="display: none;">
+                        <div class="user-menu">
+                            <span class="user-name"><i class="fas fa-user"></i> <span id="display-name">مستخدم</span></span>
+                            <div class="user-dropdown">
+                                <a href="#" id="my-account">حسابي</a>
+                                <a href="my-orders.html" id="my-orders">طلباتي</a>
+                                <a href="accountant-login.html" id="my-orders">دخول المحاسب</a>
+                                <a href="driver-login.html" id="my-orders">دخول السائق</a>
+                                <a href="#" id="logout-btn">تسجيل الخروج</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+            <div class="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+            <!-- Mobile Menu Sidebar -->
+            <div class="mobile-menu-sidebar">
+                <div class="mobile-menu-close">
+                    <i class="fas fa-times"></i>
+                </div>
+                <div class="mobile-menu-content">
+                    <!-- سيتم نسخ عناصر القائمة هنا عبر JavaScript -->
+                </div>
+            </div>
+            <!-- Mobile Menu Overlay -->
+            <div class="mobile-menu-overlay"></div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2>أشهى المأكولات <span>الحجازية</span></h2>
+                <p>تذوق الأصالة والجودة في كل لقمة</p>
+                <a href="#menu" class="btn">اطلب الآن</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-title">
+                <h2>من <span>نحن</span></h2>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>مطعم الحجازيات هو وجهتكم المفضلة لتذوق الأطباق الحجازية الأصيلة. نقدم لكم تجربة طعام فريدة تجمع بين الأصالة والجودة العالية، مع استخدام أجود المكونات ووصفاتنا المميزة التي ورثناها عبر الأجيال.</p>
+                    <p>نسعى دائماً لتقديم أفضل خدمة لعملائنا الكرام، وضمان تجربة لا تُنسى في كل زيارة.</p>
+                    <div class="features">
+                        <div class="feature">
+                            <i class="fas fa-utensils"></i>
+                            <h3>مأكولات أصيلة</h3>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-truck"></i>
+                            <h3>توصيل سريع</h3>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-award"></i>
+                            <h3>جودة عالية</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-img">
+                    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="مطعم الحجازيات">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section id="menu" class="menu">
+        <div class="container">
+            <div class="section-title">
+                <h2>قائمة <span>الطعام</span></h2>
+            </div>
+            
+            <!-- Categories View -->
+            <div class="categories-view" id="categoriesView">
+                <div class="categories-grid">
+                    <div class="category-card" data-category="shawarma">
+                        <div class="category-img">
+                            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="شاورما">
+                        </div>
+                        <div class="category-info">
+                            <h3>الشاورما</h3>
+                            <p>أشهى أنواع الشاورما بأحجام وأطعم مختلفة</p>
+                            <div class="category-count">9 أصناف</div>
+                        </div>
+                    </div>
+
+                    <div class="category-card" data-category="pizza">
+                        <div class="category-img">
+                            <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="بيتزا">
+                        </div>
+                        <div class="category-info">
+                            <h3>البيتزا</h3>
+                            <p>بيتزا طازجة بأحجام مختلفة ونكهات متنوعة</p>
+                            <div class="category-count">3 أصناف</div>
+                        </div>
+                    </div>
+
+                    <div class="category-card" data-category="sandwiches">
+                        <div class="category-img">
+                            <img src="images/shawarma.jpg" alt="السندويتشات">
+                        </div>
+                        <div class="category-info">
+                            <h3>السندويتشات</h3>
+                            <p>مشكيكي وبرجر وكبسبرجر بأطعم مميزة</p>
+                            <div class="category-count">4 أصناف</div>
+                        </div>
+                    </div>
+
+                    <div class="category-card" data-category="broast">
+                        <div class="category-img">
+                            <img src="https://images.unsplash.com/photo-1599940824468-a91f97c85eba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="بروست">
+                        </div>
+                        <div class="category-info">
+                            <h3>البروست</h3>
+                            <p>دجاج بروست مقرمش عادي وعراقي</p>
+                            <div class="category-count">2 أصناف</div>
+                        </div>
+                    </div>
+
+                    <div class="category-card" data-category="snacks">
+                        <div class="category-img">
+                            <img src="https://images.unsplash.com/photo-1573080496219-bb080dd4f877?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="مقرمشات">
+                        </div>
+                        <div class="category-info">
+                            <h3>المقرمشات</h3>
+                            <p>بطاطس مقلية وناجتس وأصناف مقرمشة</p>
+                            <div class="category-count">8 أصناف</div>
+                        </div>
+                    </div>
+
+                    <div class="category-card" data-category="cooked">
+                        <div class="category-img">
+                            <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="طباخي">
+                        </div>
+                        <div class="category-info">
+                            <h3>الطباخي</h3>
+                            <p>سمبوسة وكبة وأطباق مطبوخة متنوعة</p>
+                            <div class="category-count">6 أصناف</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products View -->
+            <div class="products-view" id="productsView" style="display: none;">
+                <div class="products-header">
+                    <button class="back-btn" id="backBtn">
+                        <i class="fas fa-arrow-right"></i>
+                        العودة للأقسام
+                    </button>
+                    <h3 class="category-title" id="categoryTitle"></h3>
+                </div>
+                
+                <div class="menu-content" id="menuContent">
+                    <!-- Products will be loaded here dynamically -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Offers Section -->
+    <section id="offers" class="offers">
+        <div class="container">
+            <div class="section-title">
+                <h2>العروض <span>المميزة</span></h2>
+            </div>
+            <div class="offers-content">
+                <div class="offer-card">
+                    <div class="offer-img">
+                        <img src="https://images.unsplash.com/photo-1603133872878-684f208fb84b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="عرض وجبة عائلية">
+                    </div>
+                    <div class="offer-info">
+                        <h3>وجبة عائلية</h3>
+                        <p>4 شاورما لحم + 4 شاورما دجاج + 2 مشروب + 2 مقبلات</p>
+                        <div class="offer-price">
+                            <span class="old-price">150 ريال</span>
+                            <span class="new-price">120 ريال</span>
+                        </div>
+                        <button class="btn">اطلب العرض</button>
+                    </div>
+                </div>
+
+                <div class="offer-card">
+                    <div class="offer-img">
+                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="عرض مشويات">
+                    </div>
+                    <div class="offer-info">
+                        <h3>وجبة المشويات</h3>
+                        <p>كباب + دجاج مشوي + أرز + سلطة + مشروب</p>
+                        <div class="offer-price">
+                            <span class="old-price">90 ريال</span>
+                            <span class="new-price">75 ريال</span>
+                        </div>
+                        <button class="btn">اطلب العرض</button>
+                    </div>
+                </div>
+
+                <div class="offer-card">
+                    <div class="offer-img">
+                        <img src="https://images.unsplash.com/photo-1594736797933-d0eb1ff2e2d6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="عرض نباتي">
+                    </div>
+                    <div class="offer-info">
+                        <h3>وجبة نباتية</h3>
+                        <p>6 فلافل + حمص + متبلات + خبز + مشروب</p>
+                        <div class="offer-price">
+                            <span class="old-price">50 ريال</span>
+                            <span class="new-price">40 ريال</span>
+                        </div>
+                        <button class="btn">اطلب العرض</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-title">
+                <h2>تواصل <span>معنا</span></h2>
+            </div>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h3>العنوان</h3>
+                            <p>شارع الملك فهد، حي النخيل، جدة</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h3>الهاتف</h3>
+                            <p>+966 12 345 6789</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h3>البريد الإلكتروني</h3>
+                            <p>info@alhejaziat.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h3>ساعات العمل</h3>
+                            <p>الأحد - الخميس: 10:00 ص - 12:00 م</p>
+                            <p>الجمعة - السبت: 12:00 م - 12:00 ص</p>
+                        </div>
+                    </div>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <input type="text" id="name" placeholder="الاسم الكامل" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" id="phone" placeholder="رقم الهاتف" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="message" placeholder="رسالتك" required></textarea>
+                        </div>
+                        <button type="submit" class="btn">إرسال</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3>سلة المشتريات</h3>
+                <span class="close-cart">&times;</span>
+            </div>
+            <div class="cart-items">
+                <!-- Cart items will be added here dynamically -->
+            </div>
+            <div class="cart-summary">
+                <div class="cart-total">
+                    <span>المجموع:</span>
+                    <span class="cart-total-price">0 ريال</span>
+                </div>
+                <button class="btn checkout-btn">إتمام الطلب</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>مطعم <span>الحجازيات</span></h2>
+                    <p>نقدم لكم أفضل الأطباق الحجازية الأصيلة</p>
+                </div>
+                <div class="footer-links">
+                    <h3>روابط سريعة</h3>
+                    <ul>
+                        <li><a href="#home">الرئيسية</a></li>
+                        <li><a href="#about">من نحن</a></li>
+                        <li><a href="#menu">قائمة الطعام</a></li>
+                        <li><a href="#offers">العروض</a></li>
+                        <li><a href="#contact">تواصل معنا</a></li>
+                    </ul>
+                </div>
+                <div class="footer-newsletter">
+                    <h3>النشرة البريدية</h3>
+                    <p>اشترك في نشرتنا البريدية للحصول على أحدث العروض</p>
+                    <form id="newsletterForm">
+                        <input type="email" placeholder="بريدك الإلكتروني" required>
+                        <button type="submit">اشترك</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 مطعم الحجازيات. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Customize Order Modal -->
+    <div class="customize-modal">
+        <div class="customize-content">
+            <div class="customize-header">
+                <h3>تخصيص طلبك</h3>
+                <span class="close-customize">&times;</span>
+            </div>
+            <div class="customize-body">
+                <div class="customize-item-info">
+                    <div class="customize-item-img">
+                        <img src="/placeholder.svg" alt="">
+                    </div>
+                    <div class="customize-item-details">
+                        <h4></h4>
+                        <p></p>
+                        <div class="customize-item-price">
+                            <span class="customize-base-price">0 ريال</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="customize-section">
+                    <h4>المكونات الأساسية</h4>
+                    <div class="customize-base-ingredients">
+                        <!-- Base ingredients will be added here dynamically -->
+                    </div>
+                </div>
+
+                <div class="customize-section">
+                    <h4>الصلصات</h4>
+                    <div class="customize-sauces">
+                        <!-- Sauces will be added here dynamically -->
+                    </div>
+                </div>
+
+                <div class="customize-section">
+                    <h4>إضافات</h4>
+                    <div class="customize-extras">
+                        <!-- Extras will be added here dynamically -->
+                    </div>
+                </div>
+
+                <div class="customize-section">
+                    <h4>ملاحظات إضافية</h4>
+                    <textarea class="customize-notes" placeholder="اكتب أي ملاحظات إضافية لطلبك..."></textarea>
+                </div>
+            </div>
+            <div class="customize-footer">
+                <div class="customize-total">
+                    <span>الإجمالي:</span>
+                    <span class="customize-total-price">0 ريال</span>
+                </div>
+                <div class="customize-actions">
+                    <button class="btn cancel-customize">إلغاء</button>
+                    <button class="btn add-to-cart-customize">أضف للسلة</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔹 حمّل Firebase أولاً -->
+    <script type="module" src="firebase.js"></script>
+
+    <!-- 🔹 بعدها سكربت الموقع الأساسي -->
+    <script type="module" src="script.js"></script>
+    <script>
+        // التحقق من تسجيل الدخول عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+
+            if (!isLoggedIn) {
+                // إظهار نافذة منبثقة لتسجيل الدخول أو التسجيل
+                const loginModal = document.createElement('div');
+                loginModal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.8);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 10000;
+                    direction: rtl;
+                `;
+
+                loginModal.innerHTML = `
+                    <div style="
+                        background-color: white;
+                        border-radius: 15px;
+                        padding: 30px;
+                        max-width: 500px;
+                        width: 90%;
+                        text-align: center;
+                        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+                    ">
+                        <h2 style="color: #e74c3c; margin-bottom: 20px;">مرحباً بك في مطعم الحجازيات</h2>
+                        <p style="margin-bottom: 30px; color: #555; line-height: 1.6;">
+                            يرجى تسجيل الدخول أو إنشاء حساب جديد للاستمتاع بتجربة طلب فريدة وحفظ طلباتك المفضلة
+                        </p>
+                        <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                            <button id="loginBtn" style="
+                                flex: 1;
+                                padding: 12px;
+                                background: linear-gradient(to right, #e74c3c, #c0392b);
+                                color: white;
+                                border: none;
+                                border-radius: 8px;
+                                font-family: 'Tajawal', sans-serif;
+                                font-size: 16px;
+                                font-weight: 500;
+                                cursor: pointer;
+                            ">تسجيل الدخول</button>
+                            <button id="signupBtn" style="
+                                flex: 1;
+                                padding: 12px;
+                                background-color: #f1f1f1;
+                                color: #333;
+                                border: none;
+                                border-radius: 8px;
+                                font-family: 'Tajawal', sans-serif;
+                                font-size: 16px;
+                                font-weight: 500;
+                                cursor: pointer;
+                            ">إنشاء حساب</button>
+                        </div>
+                        <button id="skipBtn" style="
+                            background: none;
+                            border: none;
+                            color: #777;
+                            text-decoration: underline;
+                            cursor: pointer;
+                            font-family: 'Tajawal', sans-serif;
+                            font-size: 14px;
+                        ">التخطي والاستمرار كزائر</button>
+                    </div>
+                `;
+
+                document.body.appendChild(loginModal);
+
+                // إضافة أحداث للأزرار
+                document.getElementById('loginBtn').addEventListener('click', function() {
+                    window.location.href = 'login.html';
+                });
+
+                document.getElementById('signupBtn').addEventListener('click', function() {
+                    window.location.href = 'login.html';
+                });
+
+                document.getElementById('skipBtn').addEventListener('click', function() {
+                    document.body.removeChild(loginModal);
+                    localStorage.setItem('isGuest', 'true');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
