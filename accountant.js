@@ -228,10 +228,24 @@ async function openModal(id, data) {
   const orderNotes = document.getElementById("modal-order-notes");
   orderNotes.textContent = data.notes || "لا توجد ملاحظات";
 
-  // إعداد زر تحديث الحالة
-  updateStatusBtn.onclick = async () => {
-    await updateDoc(doc(db, "orders", id), { status: statusSelect.value });
+  // إعداد أزرار التحكم في الطلب
+  document.getElementById("confirm-order-btn").onclick = async () => {
+    await updateDoc(doc(db, "orders", id), { status: 'preparing' });
     closeModal();
+  };
+
+  document.getElementById("ready-order-btn").onclick = async () => {
+    await updateDoc(doc(db, "orders", id), { status: 'ready' });
+    closeModal();
+  };
+
+  document.getElementById("deliver-order-btn").onclick = async () => {
+    await updateDoc(doc(db, "orders", id), { status: 'delivered' });
+    closeModal();
+  };
+
+  document.getElementById("print-order-btn").onclick = () => {
+    window.print();
   };
 
   modal.style.display = "flex";
