@@ -58,7 +58,7 @@ function setupOrdersListener() {
     const orderCard = document.createElement("div");
     orderCard.className = "order-card";
     orderCard.style.animationDelay = `${index * 0.1}s`;
-    
+
     // Format date if available
     let orderDate = "-";
     if (data.createdAt) {
@@ -71,7 +71,7 @@ function setupOrdersListener() {
         minute: "2-digit"
       });
     }
-    
+
     orderCard.innerHTML = `
       <div class="order-header">
         <div class="order-id">#${docu.id}</div>
@@ -83,11 +83,11 @@ function setupOrdersListener() {
         <span>${data.total || 0} ريال</span>
       </div>
     `;
-    
+
     orderCard.addEventListener("click", () => {
       openModal(docu.id, data);
     });
-    
+
     ordersGrid.appendChild(orderCard);
     totalRevenue += Number(data.total || 0);
     if (data.customerName) customers.add(data.customerName);
@@ -109,12 +109,10 @@ function translateStatus(status) {
   }
 }
 
-// عرض تفاصيل الطلب
-// تم نقل معالج النقر إلى داخل دالة loadOrders
-
+// عرض تفاصيل الطلب بشكل كامل
 async function openModal(id, data) {
   const docRef = doc(db, "orders", id);
-  const snap = await getDocs(collection(db, "orders"));
+
   // Format date if available
   let orderDate = "-";
   if (data.createdAt) {
@@ -128,42 +126,133 @@ async function openModal(id, data) {
     });
   }
 
-  document.getElementById("modal-order-id").textContent = id;
+  // تعبئة معلومات العميل
   document.getElementById("modal-customer-name").textContent = data.customerName || "-";
-  document.getElementById("modal-customer-address").textContent = data.address || "-";
   document.getElementById("modal-customer-phone").textContent = data.phone || "-";
+  document.getElementById("modal-customer-address").textContent = data.address || "-";
+
+  // تعبئة معلومات الطلب
+  document.getElementById("modal-order-id").textContent = "#" + id;
   document.getElementById("modal-order-date").textContent = orderDate;
+  document.getElementById("modal-order-status").textContent = translateStatus(data.status) || "-";
   document.getElementById("modal-order-total").textContent = (data.total || 0) + " ريال";
+
+  // تعبئة حالة الطلب في القائمة المنسدلة
   statusSelect.value = data.status || "pending";
-  
-  // Display order items if available
-  const orderItemsContainer = document.getElementById("order-items-container");
+
+  // عرض عناصر الطلب
+  const orderItemsContainer = document.getElementById("modal-order-items");
   orderItemsContainer.innerHTML = "";
-  
-  if (data.items && Array.isArray(data.items)) {
+
+  if (data.items && Array.isArray(data.items) && data.items.length > 0) {
     data.items.forEach(item => {
       const itemElement = document.createElement("div");
       itemElement.className = "order-item";
+
+      // حساب السعر الإجمالي للصنف
+      const itemTotal = (item.price || 0) * (item.quantity || 1);
+
       itemElement.innerHTML = `
-        <span>${item.name || "منتج غير معروف"}</span>
-        <span>${item.quantity || 1} × ${item.price || 0} ريال</span>
+        <div class="order-item-name">${item.name || "منتج غير معروف"}</div>
+        <div class="order-item-details">
+          <span class="order-item-quantity">${item.quantity || 1} × ${item.price || 0} ريال</span>
+          <span class="order-item-price">${itemTotal} ريال</span>
+        </div>
       `;
+
       orderItemsContainer.appendChild(itemElement);
     });
   } else {
     const noItemsElement = document.createElement("div");
     noItemsElement.className = "order-item";
-    noItemsElement.innerHTML = "<span>لا توجد تفاصيل للمنتجات</span>";
+    noItemsElement.innerHTML = "<div>لا توجد تفاصيل للمنتجات</div>";
     orderItemsContainer.appendChild(noItemsElement);
   }
 
+  // عرض التخصيصات
+  const customizationsContainer = document.getElementById("modal-customizations");
+  customizationsContainer.innerHTML = "";
+
+  // التحقق من وجود تخصيصات في العناصر
+  let hasCustomizations = false;
+
+  if (data.items && Array.isArray(data.items)) {
+    data.items.forEach(item => {
+      if (item.customizations && Object.keys(item.customizations).length > 0) {
+        hasCustomizations = true;
+
+        // إنشاء قسم لكل منتج مع تخصيصاته
+        const productSection = document.createElement("div");
+        productSection.style.marginBottom = "15px";
+
+        const productName = document.createElement("h4");
+        productName.textContent = item.name || "منتج غير معروف";
+        productName.style.marginBottom = "8px";
+        productName.style.color = "var(--dark-color)";
+        productSection.appendChild(productName);
+
+        // إضافة كل تخصيص
+        Object.entries(item.customizations).forEach(([key, value]) => {
+          if (value) {
+            const customizationElement = document.createElement("div");
+            customizationElement.className = "customization-item";
+
+            const customizationName = document.createElement("span");
+            customizationName.className = "customization-item-name";
+            customizationName.textContent = getCustomizationName(key);
+
+            const customizationValue = document.createElement("span");
+            customizationValue.className = "customization-item-value";
+            customizationValue.textContent = value === true ? "نعم" : value;
+
+            customizationElement.appendChild(customizationName);
+            customizationElement.appendChild(customizationValue);
+            productSection.appendChild(customizationElement);
+          }
+        });
+
+        customizationsContainer.appendChild(productSection);
+      }
+    });
+  }
+
+  // إذا لم يتم العثور على تخصيصات
+  if (!hasCustomizations) {
+    const noCustomizationsElement = document.createElement("div");
+    noCustomizationsElement.className = "customization-item";
+    noCustomizationsElement.innerHTML = "<span>لا توجد تخصيصات</span>";
+    customizationsContainer.appendChild(noCustomizationsElement);
+  }
+
+  // عرض الملاحظات
+  const orderNotes = document.getElementById("modal-order-notes");
+  orderNotes.textContent = data.notes || "لا توجد ملاحظات";
+
+  // إعداد زر تحديث الحالة
   updateStatusBtn.onclick = async () => {
     await updateDoc(doc(db, "orders", id), { status: statusSelect.value });
     closeModal();
-    // تمت إزالة استدعاء loadOrders لأن onSnapshot يقوم بالتحديث تلقائياً
   };
 
   modal.style.display = "flex";
+}
+
+// دالة مساعدة لتحويل مفاتيح التخصيص إلى أسماء واضحة
+function getCustomizationName(key) {
+  const customizationNames = {
+    "withoutOnion": "بدون بصل",
+    "withoutPickles": "بدون مخلل",
+    "extraCheese": "زيادة جبن",
+    "extraMeat": "زيادة لحم",
+    "spicyLevel": "مستوى التوابل",
+    "cookingLevel": "مستوى النضج",
+    "specialInstructions": "تعليمات خاصة",
+    "sauce": "الصلصة",
+    "drink": "المشروب",
+    "sideDish": "طبق جانبي"
+  };
+
+  return customizationNames[key] || key;
 }
 
 function closeModal() {
