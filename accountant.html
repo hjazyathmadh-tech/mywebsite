@@ -462,20 +462,79 @@
       font-family: 'Tajawal', sans-serif;
     }
 
-    .status-update button {
+    /* أزرار الإجراءات */
+    .order-actions {
+      margin-top: 20px;
+      border-top: 1px solid #eee;
+      padding-top: 20px;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
       padding: 10px 20px;
-      background-color: var(--primary-color);
-      color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       font-family: 'Tajawal', sans-serif;
       font-weight: 500;
-      transition: background-color 0.3s ease;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .status-update button:hover {
+    .action-btn i {
+      font-size: 1rem;
+    }
+
+    .action-btn.accept {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .action-btn.accept:hover {
       background-color: var(--secondary-color);
+    }
+
+    .action-btn.prepare {
+      background-color: #3498db;
+      color: white;
+    }
+
+    .action-btn.prepare:hover {
+      background-color: #2980b9;
+    }
+
+    .action-btn.ready {
+      background-color: #2ecc71;
+      color: white;
+    }
+
+    .action-btn.ready:hover {
+      background-color: #27ae60;
+    }
+
+    .action-btn.deliver {
+      background-color: #9b59b6;
+      color: white;
+    }
+
+    .action-btn.deliver:hover {
+      background-color: #8e44ad;
+    }
+
+    .action-btn.complete {
+      background-color: #95a5a6;
+      color: white;
+    }
+
+    .action-btn.complete:hover {
+      background-color: #7f8c8d;
     }
 
     /* تأثيرات الحركة */
@@ -690,14 +749,10 @@
         </div>
       </div>
 
-      <div class="status-update">
-        <select id="status-select">
-          <option value="pending">قيد الانتظار</option>
-          <option value="preparing">قيد التحضير</option>
-          <option value="ready">جاهز</option>
-          <option value="delivered">تم التوصيل</option>
-        </select>
-        <button id="update-status-btn">تحديث الحالة</button>
+      <div class="order-actions">
+        <div class="action-buttons" id="action-buttons">
+          <!-- سيتم إضافة الأزرار ديناميكيًا حسب الحالة الحالية -->
+        </div>
       </div>
     </div>
   </div>

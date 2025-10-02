@@ -18,8 +18,7 @@ import { app, auth, db } from "./firebase.js";
 const ordersGrid = document.getElementById("orders-grid");
 const modal = document.getElementById("order-modal");
 const closeModalBtn = document.querySelector(".close-modal");
-const statusSelect = document.getElementById("status-select");
-const updateStatusBtn = document.getElementById("update-status-btn");
+const actionButtons = document.getElementById("action-buttons");
 const accountantNameEl = document.getElementById("accountant-name");
 const totalRevenueEl = document.getElementById("total-revenue");
 const totalOrdersEl = document.getElementById("total-orders");
@@ -137,8 +136,8 @@ async function openModal(id, data) {
   document.getElementById("modal-order-status").textContent = translateStatus(data.status) || "-";
   document.getElementById("modal-order-total").textContent = (data.total || 0) + " ريال";
 
-  // تعبئة حالة الطلب في القائمة المنسدلة
-  statusSelect.value = data.status || "pending";
+  // عرض أزرار الإجراءات المناسبة حسب حالة الطلب
+  renderActionButtons(id, data.status || "pending");
 
   // عرض عناصر الطلب
   const orderItemsContainer = document.getElementById("modal-order-items");
@@ -228,13 +227,50 @@ async function openModal(id, data) {
   const orderNotes = document.getElementById("modal-order-notes");
   orderNotes.textContent = data.notes || "لا توجد ملاحظات";
 
-  // إعداد زر تحديث الحالة
-  updateStatusBtn.onclick = async () => {
-    await updateDoc(doc(db, "orders", id), { status: statusSelect.value });
-    closeModal();
-  };
+  // سيتم إعداد أحداث النقر للأزرار في دالة renderActionButtons
 
   modal.style.display = "flex";
+}
+
+// دالة لعرض أزرار الإجراءات المناسبة حسب حالة الطلب
+function renderActionButtons(orderId, currentStatus) {
+  // مسح الأزرار الحالية
+  actionButtons.innerHTML = "";
+
+  // إنشاء الأزرار حسب الحالة الحالية
+  if (currentStatus === "pending") {
+    // زر قبول الطلب (ينقل الحالة إلى "قيد التحضير")
+    const acceptBtn = document.createElement("button");
+    acceptBtn.className = "action-btn accept";
+    acceptBtn.innerHTML = '<i class="fas fa-check"></i> قبول الطلب';
+    acceptBtn.onclick = async () => {
+      await updateDoc(doc(db, "orders", orderId), { status: "preparing" });
+      closeModal();
+    };
+    actionButtons.appendChild(acceptBtn);
+  } 
+  else if (currentStatus === "preparing") {
+    // زر إعلام بأن الطلب جاهز (ينقل الحالة إلى "جاهز")
+    const readyBtn = document.createElement("button");
+    readyBtn.className = "action-btn ready";
+    readyBtn.innerHTML = '<i class="fas fa-utensils"></i> الطلب جاهز';
+    readyBtn.onclick = async () => {
+      await updateDoc(doc(db, "orders", orderId), { status: "ready" });
+      closeModal();
+    };
+    actionButtons.appendChild(readyBtn);
+  }
+  else if (currentStatus === "ready") {
+    // زر تسليم الطلب للسائق (ينقل الحالة إلى "تم التوصيل")
+    const deliverBtn = document.createElement("button");
+    deliverBtn.className = "action-btn deliver";
+    deliverBtn.innerHTML = '<i class="fas fa-motorcycle"></i> تسليم الطلب';
+    deliverBtn.onclick = async () => {
+      await updateDoc(doc(db, "orders", orderId), { status: "delivered" });
+      closeModal();
+    };
+    actionButtons.appendChild(deliverBtn);
+  }
 }
 
 // دالة مساعدة لتحويل مفاتيح التخصيص إلى أسماء واضحة
