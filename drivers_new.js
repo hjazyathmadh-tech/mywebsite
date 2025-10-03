@@ -9,7 +9,9 @@ import {
   onSnapshot,
   onAuthStateChanged,
   signOut,
-  auth
+  auth,
+  saveDriverInfo,
+  loadDriverInfo
 } from "./firebase.js";
 
 // تعريف المتغيرات مع التحقق من وجود العناصر
@@ -189,37 +191,8 @@ function displayAccountInfo() {
 
 // تحميل بيانات السائق المحفوظة مسبقًا
 async function loadDriverData() {
-  const driverId = auth.currentUser ? auth.currentUser.uid : null;
-  if (!driverId) return;
-
   try {
-    const driverDoc = await getDoc(doc(db, "drivers", driverId));
-
-    if (driverDoc.exists()) {
-      const driverData = driverDoc.data();
-
-      // تعبئة الحقول بالبيانات المحفوظة
-      const driverNameInput = document.getElementById("driverNameInput");
-      const phoneInput = document.getElementById("phoneInput");
-      const plateNumberInput = document.getElementById("plateNumberInput");
-      const photoPreview = document.getElementById("photoPreview");
-
-      if (driverNameInput && driverData.driverName) {
-        driverNameInput.value = driverData.driverName;
-      }
-
-      if (phoneInput && driverData.phone) {
-        phoneInput.value = driverData.phone;
-      }
-
-      if (plateNumberInput && driverData.plateNumber) {
-        plateNumberInput.value = driverData.plateNumber;
-      }
-
-      if (photoPreview && driverData.driverPhoto) {
-        photoPreview.innerHTML = `<img src="${driverData.driverPhoto}" alt="صورة السائق">`;
-      }
-    }
+    await loadDriverInfo();
   } catch (error) {
     console.error("خطأ في تحميل بيانات السائق:", error);
     showNotification("حدث خطأ أثناء تحميل بياناتك", 'danger');
@@ -282,23 +255,16 @@ function setupDriverFormListeners() {
 async function saveDriverData(e) {
   e.preventDefault();
 
-  const driverId = auth.currentUser ? auth.currentUser.uid : null;
-  if (!driverId) {
-    showNotification("يجب تسجيل الدخول أولاً", 'danger');
-    return;
-  }
-
   // الحصول على قيم الحقول
   const driverNameInput = document.getElementById("driverNameInput");
   const phoneInput = document.getElementById("phoneInput");
   const plateNumberInput = document.getElementById("plateNumberInput");
-  const photoPreview = document.getElementById("photoPreview");
-  const photoImg = photoPreview.querySelector("img");
+  const driverPhotoInput = document.getElementById("driverPhotoInput");
 
   const driverName = driverNameInput ? driverNameInput.value : "";
   const phone = phoneInput ? phoneInput.value : "";
   const plateNumber = plateNumberInput ? plateNumberInput.value : "";
-  const driverPhoto = photoImg ? photoImg.src : "";
+  const file = driverPhotoInput && driverPhotoInput.files.length > 0 ? driverPhotoInput.files[0] : null;
 
   // التحقق من الحقول المطلوبة
   if (!driverName || !phone || !plateNumber) {
@@ -307,20 +273,13 @@ async function saveDriverData(e) {
   }
 
   try {
-    // حفظ البيانات في قاعدة البيانات
-    await updateDoc(doc(db, "drivers", driverId), {
-      driverName,
-      phone,
-      plateNumber,
-      driverPhoto,
-      updatedAt: new Date()
-    });
+    // حفظ البيانات في قاعدة البيانات والتخزين
+    await saveDriverInfo(driverName, phone, plateNumber, file);
 
     // حفظ البيانات في التخزين المحلي
     localStorage.setItem("driverName", driverName);
     localStorage.setItem("driverPhone", phone);
     localStorage.setItem("vehiclePlate", plateNumber);
-    localStorage.setItem("driverPhoto", driverPhoto);
 
     // تحديث اسم السائق في الواجهة
     const driverNameEl = document.getElementById("driverName");

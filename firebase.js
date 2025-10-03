@@ -30,6 +30,13 @@ import {
   sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-storage.js";
+
 // ===== معلومات مشروعك من Firebase =====
 const firebaseConfig = {
   apiKey: "AIzaSyAki8OCL3hfL3FFIiZdf9_kJmWxZzRFSCs",
@@ -46,6 +53,7 @@ const app  = initializeApp(firebaseConfig);
 const db   = getFirestore(app);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
+const storage = getStorage(app);
 
 // ===== مزود خدمة جوجل لتسجيل الدخول =====
 const googleProvider = new GoogleAuthProvider();
@@ -56,6 +64,7 @@ export {
   db,
   auth,
   analytics,
+  storage,
   googleProvider,
   collection,
   doc,
@@ -75,7 +84,10 @@ export {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  ref,
+  uploadBytes,
+  getDownloadURL
 };
 
 // ===== دالة إرسال الطلب =====
@@ -432,5 +444,46 @@ export async function driverLogout() {
   } catch (error) {
     console.error("خطأ في تسجيل خروج السائق:", error);
     return { success: false };
+  }
+}
+
+// دالة لحفظ بيانات السائق
+export async function saveDriverInfo(name, phone, plate, file) {
+  const user = auth.currentUser;
+  if (!user) return alert("⚠️ يجب تسجيل الدخول");
+
+  let photoURL = "";
+  if (file) {
+    const storageRef = ref(storage, `drivers/${user.uid}/profile.jpg`);
+    await uploadBytes(storageRef, file);
+    photoURL = await getDownloadURL(storageRef);
+  }
+
+  await setDoc(doc(db, "drivers", user.uid), {
+    name: name,
+    phone: phone,
+    plate: plate,
+    photo: photoURL,
+    updatedAt: new Date()
+  }, { merge: true });
+
+  alert("✅ تم حفظ بياناتك بنجاح");
+}
+
+// دالة لعرض البيانات عند تحميل صفحة "حسابي"
+export async function loadDriverInfo() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const driverSnap = await getDoc(doc(db, "drivers", user.uid));
+  if (driverSnap.exists()) {
+    const data = driverSnap.data();
+    document.getElementById("driverNameInput").value = data.name || "";
+    document.getElementById("phoneInput").value = data.phone || "";
+    document.getElementById("plateNumberInput").value = data.plate || "";
+    if (data.photo) {
+      const photoPreview = document.getElementById("photoPreview");
+      photoPreview.innerHTML = `<img src="${data.photo}" alt="صورة السائق">`;
+    }
   }
 }
