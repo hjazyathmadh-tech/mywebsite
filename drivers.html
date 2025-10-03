@@ -827,6 +827,70 @@
       display: flex;
       justify-content: flex-end;
     }
+
+    /* أنماط القائمة المنسدلة للجوال */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--primary-color);
+      font-size: 1.2rem;
+      padding: 5px;
+    }
+
+    .mobile-dropdown {
+      display: none;
+      position: absolute;
+      top: 70px;
+      left: 15px;
+      right: 15px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .mobile-dropdown a {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      color: var(--dark-color);
+      text-decoration: none;
+      border-bottom: 1px solid #f1f1f1;
+      transition: background-color 0.3s ease;
+    }
+
+    .mobile-dropdown a:last-child {
+      border-bottom: none;
+    }
+
+    .mobile-dropdown a:hover {
+      background-color: #f8f9fa;
+    }
+
+    .mobile-dropdown a i {
+      margin-left: 10px;
+      color: var(--primary-color);
+    }
+
+    @media (max-width: 576px) {
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      .mobile-dropdown.show {
+        display: flex;
+      }
+    }
   </style>
 </head>
 <body>
@@ -856,9 +920,22 @@
     <div class="main-content">
       <div class="header">
         <h1>لوحة تحكم السائق</h1>
-        <button id="logoutBtn" class="logout-btn" style="background: none; border: none; cursor: pointer; color: var(--primary-color); font-size: 1.2rem;" title="تسجيل الخروج">
-          <i class="fas fa-sign-out-alt"></i>
-        </button>
+        <div class="header-actions">
+          <button id="mobileMenuBtn" class="mobile-menu-btn" title="القائمة">
+            <i class="fas fa-ellipsis-v"></i>
+          </button>
+          <button id="logoutBtn" class="logout-btn" style="background: none; border: none; cursor: pointer; color: var(--primary-color); font-size: 1.2rem;" title="تسجيل الخروج">
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- القائمة المنسدلة للجوال -->
+      <div class="mobile-dropdown" id="mobileDropdown">
+        <a href="#" id="mobile-home-link"><i class="fas fa-home"></i> الرئيسية</a>
+        <a href="#" id="mobile-accepted-orders-link"><i class="fas fa-shopping-cart"></i> الطلبات المقبولة</a>
+        <a href="#" id="mobile-completed-orders-link"><i class="fas fa-check-circle"></i> الطلبات المنتهية</a>
+        <a href="#" id="mobile-account-link"><i class="fas fa-user"></i> حسابي</a>
       </div>
 
       <div class="stats-container">

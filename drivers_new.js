@@ -46,6 +46,9 @@ onAuthStateChanged(auth, (user) => {
 
   // إعداد مستمعي أحداث القائمة الجانبية
   setupMenuListeners(user.uid);
+
+  // إعداد القائمة المنسدلة للجوال
+  setupMobileDropdownMenu();
 });
 
 // إعداد مستمعي أحداث القائمة الجانبية
@@ -765,4 +768,67 @@ function showNotification(message, type = 'info') {
             }
         }, 300);
     }, 5000);
+}
+
+// Setup mobile dropdown menu
+function setupMobileDropdownMenu() {
+  const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+  const mobileDropdown = document.getElementById("mobileDropdown");
+  const mobileHomeLink = document.getElementById("mobile-home-link");
+  const mobileAcceptedOrdersLink = document.getElementById("mobile-accepted-orders-link");
+  const mobileCompletedOrdersLink = document.getElementById("mobile-completed-orders-link");
+  const mobileAccountLink = document.getElementById("mobile-account-link");
+
+  // Toggle dropdown menu
+  if (mobileMenuBtn && mobileDropdown) {
+    mobileMenuBtn.addEventListener("click", () => {
+      mobileDropdown.classList.toggle("show");
+    });
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener("click", (e) => {
+    if (mobileDropdown && !mobileDropdown.contains(e.target) && mobileMenuBtn && !mobileMenuBtn.contains(e.target)) {
+      mobileDropdown.classList.remove("show");
+    }
+  });
+
+  // Setup mobile menu links
+  if (mobileHomeLink) {
+    mobileHomeLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      mobileDropdown.classList.remove("show");
+      displayPendingOrders();
+    });
+  }
+
+  if (mobileAcceptedOrdersLink) {
+    mobileAcceptedOrdersLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      mobileDropdown.classList.remove("show");
+      const driverId = auth.currentUser ? auth.currentUser.uid : null;
+      if (driverId) {
+        displayInProgressOrders(driverId);
+      }
+    });
+  }
+
+  if (mobileCompletedOrdersLink) {
+    mobileCompletedOrdersLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      mobileDropdown.classList.remove("show");
+      const driverId = auth.currentUser ? auth.currentUser.uid : null;
+      if (driverId) {
+        displayCompletedOrders(driverId);
+      }
+    });
+  }
+
+  if (mobileAccountLink) {
+    mobileAccountLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      mobileDropdown.classList.remove("show");
+      displayAccountInfo();
+    });
+  }
 }
