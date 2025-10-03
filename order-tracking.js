@@ -130,8 +130,8 @@ function updateOrderStatus() {
         </div>
     `;
 
-    // Show ETA for orders in progress
-    if (order.status === "in_progress" && order.eta) {
+    // Show ETA for orders in progress or ready
+    if ((order.status === "in_progress" || order.status === "ready") && order.eta) {
         etaContainer.style.display = "flex";
         etaTime.textContent = order.eta;
     } else {
@@ -378,7 +378,9 @@ function getOrderStatusInfo(status) {
         case "pending":
             return { class: "status-pending", text: "قيد الانتظار" };
         case "accepted":
-            return { class: "status-accepted", text: "مقبول" };
+            return { class: "status-accepted", text: "قيد التحضير" };
+        case "ready":
+            return { class: "status-ready", text: "جاهز للتوصيل" };
         case "in_progress":
             return { class: "status-in_progress", text: "قيد التنفيذ" };
         case "delivered":

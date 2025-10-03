@@ -104,6 +104,16 @@ function setActiveMenuItem(activeItem) {
 
 // عرض الطلبات التي حالتها "accepted" ونوعها "delivery" (توصيل)
 function displayPendingOrders() {
+  // إظهار حاوية الطلبات وإخفاء نموذج بيانات السائق
+  if (ordersContainer) {
+    ordersContainer.style.display = "grid";
+  }
+
+  const driverAccountForm = document.getElementById("driverAccountForm");
+  if (driverAccountForm) {
+    driverAccountForm.style.display = "none";
+  }
+
   const ordersQuery = query(
     collection(db, "orders"),
     where("status", "==", "accepted"),
@@ -115,6 +125,16 @@ function displayPendingOrders() {
 
 // عرض الطلبات الجارية (حالة ready)
 function displayInProgressOrders(driverId) {
+  // إظهار حاوية الطلبات وإخفاء نموذج بيانات السائق
+  if (ordersContainer) {
+    ordersContainer.style.display = "grid";
+  }
+
+  const driverAccountForm = document.getElementById("driverAccountForm");
+  if (driverAccountForm) {
+    driverAccountForm.style.display = "none";
+  }
+
   const ordersQuery = query(
     collection(db, "orders"),
     where("driverId", "==", driverId),
@@ -126,6 +146,16 @@ function displayInProgressOrders(driverId) {
 
 // عرض الطلبات المكتملة (حالة completed)
 function displayCompletedOrders(driverId) {
+  // إظهار حاوية الطلبات وإخفاء نموذج بيانات السائق
+  if (ordersContainer) {
+    ordersContainer.style.display = "grid";
+  }
+
+  const driverAccountForm = document.getElementById("driverAccountForm");
+  if (driverAccountForm) {
+    driverAccountForm.style.display = "none";
+  }
+
   const ordersQuery = query(
     collection(db, "orders"),
     where("driverId", "==", driverId),
@@ -137,20 +167,168 @@ function displayCompletedOrders(driverId) {
 
 // عرض معلومات الحساب
 function displayAccountInfo() {
+  // إخفاء حاوية الطلبات وإظهار نموذج بيانات السائق
   if (ordersContainer) {
-    ordersContainer.innerHTML = `
-      <div class="empty-orders">
-        <i class="fas fa-user-circle fs-1"></i>
-        <h4>معلومات حسابي</h4>
-        <div style="text-align: right; margin-top: 20px; max-width: 500px;">
-          <p><strong>الاسم:</strong> ${localStorage.getItem("driverName") || "غير متوفر"}</p>
-          <p><strong>البريد الإلكتروني:</strong> ${auth.currentUser ? auth.currentUser.email : "غير متوفر"}</p>
-          <p><strong>رقم الهاتف:</strong> ${localStorage.getItem("driverPhone") || "غير متوفر"}</p>
-          <p><strong>نوع المركبة:</strong> ${localStorage.getItem("vehicleType") || "غير متوفر"}</p>
-          <p><strong>رقم لوحة المركبة:</strong> ${localStorage.getItem("vehiclePlate") || "غير متوفر"}</p>
-        </div>
-      </div>
-    `;
+    ordersContainer.style.display = "none";
+  }
+
+  const driverAccountForm = document.getElementById("driverAccountForm");
+  if (driverAccountForm) {
+    driverAccountForm.style.display = "block";
+
+    // تحميل بيانات السائق المحفوظة مسبقًا
+    loadDriverData();
+
+    // إعداد مستمعي الأحداث للنموذج
+    setupDriverFormListeners();
+  }
+}
+
+// تحميل بيانات السائق المحفوظة مسبقًا
+async function loadDriverData() {
+  const driverId = auth.currentUser ? auth.currentUser.uid : null;
+  if (!driverId) return;
+
+  try {
+    const driverDoc = await getDoc(doc(db, "drivers", driverId));
+
+    if (driverDoc.exists()) {
+      const driverData = driverDoc.data();
+
+      // تعبئة الحقول بالبيانات المحفوظة
+      const driverNameInput = document.getElementById("driverNameInput");
+      const phoneInput = document.getElementById("phoneInput");
+      const plateNumberInput = document.getElementById("plateNumberInput");
+      const photoPreview = document.getElementById("photoPreview");
+
+      if (driverNameInput && driverData.driverName) {
+        driverNameInput.value = driverData.driverName;
+      }
+
+      if (phoneInput && driverData.phone) {
+        phoneInput.value = driverData.phone;
+      }
+
+      if (plateNumberInput && driverData.plateNumber) {
+        plateNumberInput.value = driverData.plateNumber;
+      }
+
+      if (photoPreview && driverData.driverPhoto) {
+        photoPreview.innerHTML = `<img src="${driverData.driverPhoto}" alt="صورة السائق">`;
+      }
+    }
+  } catch (error) {
+    console.error("خطأ في تحميل بيانات السائق:", error);
+    showNotification("حدث خطأ أثناء تحميل بياناتك", 'danger');
+  }
+}
+
+// إعداد مستمعي الأحداث لنموذج بيانات السائق
+function setupDriverFormListeners() {
+  const driverForm = document.getElementById("driverForm");
+  const cameraBtn = document.getElementById("cameraBtn");
+  const galleryBtn = document.getElementById("galleryBtn");
+  const driverPhotoInput = document.getElementById("driverPhotoInput");
+
+  // مستمع حدث إرسال النموذج
+  if (driverForm) {
+    driverForm.addEventListener("submit", saveDriverData);
+  }
+
+  // مستمع حدث زر الكاميرا
+  if (cameraBtn) {
+    cameraBtn.addEventListener("click", () => {
+      // في بيئة حقيقية، سيتم فتح الكاميرا هنا
+      // الآن سنقوم بمحاكاة فتح المعرض
+      if (driverPhotoInput) {
+        driverPhotoInput.setAttribute("capture", "camera");
+        driverPhotoInput.click();
+      }
+    });
+  }
+
+  // مستمع حدث زر المعرض
+  if (galleryBtn) {
+    galleryBtn.addEventListener("click", () => {
+      if (driverPhotoInput) {
+        driverPhotoInput.removeAttribute("capture");
+        driverPhotoInput.click();
+      }
+    });
+  }
+
+  // مستمع حدث اختيار الصورة
+  if (driverPhotoInput) {
+    driverPhotoInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const photoPreview = document.getElementById("photoPreview");
+          if (photoPreview) {
+            photoPreview.innerHTML = `<img src="${event.target.result}" alt="صورة السائق">`;
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+}
+
+// حفظ بيانات السائق
+async function saveDriverData(e) {
+  e.preventDefault();
+
+  const driverId = auth.currentUser ? auth.currentUser.uid : null;
+  if (!driverId) {
+    showNotification("يجب تسجيل الدخول أولاً", 'danger');
+    return;
+  }
+
+  // الحصول على قيم الحقول
+  const driverNameInput = document.getElementById("driverNameInput");
+  const phoneInput = document.getElementById("phoneInput");
+  const plateNumberInput = document.getElementById("plateNumberInput");
+  const photoPreview = document.getElementById("photoPreview");
+  const photoImg = photoPreview.querySelector("img");
+
+  const driverName = driverNameInput ? driverNameInput.value : "";
+  const phone = phoneInput ? phoneInput.value : "";
+  const plateNumber = plateNumberInput ? plateNumberInput.value : "";
+  const driverPhoto = photoImg ? photoImg.src : "";
+
+  // التحقق من الحقول المطلوبة
+  if (!driverName || !phone || !plateNumber) {
+    showNotification("يرجى تعبئة جميع الحقول المطلوبة", 'warning');
+    return;
+  }
+
+  try {
+    // حفظ البيانات في قاعدة البيانات
+    await updateDoc(doc(db, "drivers", driverId), {
+      driverName,
+      phone,
+      plateNumber,
+      driverPhoto,
+      updatedAt: new Date()
+    });
+
+    // حفظ البيانات في التخزين المحلي
+    localStorage.setItem("driverName", driverName);
+    localStorage.setItem("driverPhone", phone);
+    localStorage.setItem("vehiclePlate", plateNumber);
+    localStorage.setItem("driverPhoto", driverPhoto);
+
+    // تحديث اسم السائق في الواجهة
+    const driverNameEl = document.getElementById("driverName");
+    if (driverNameEl) {
+      driverNameEl.textContent = driverName;
+    }
+
+    showNotification("تم حفظ بياناتك بنجاح", 'success');
+  } catch (error) {
+    console.error("خطأ في حفظ بيانات السائق:", error);
+    showNotification("حدث خطأ أثناء حفظ بياناتك", 'danger');
   }
 }
 
