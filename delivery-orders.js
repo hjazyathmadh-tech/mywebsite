@@ -1,6 +1,6 @@
 // Delivery Orders Page JavaScript
 import { auth, db } from "./firebase.js";
-import { collection, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+import { collection, query, where, onSnapshot, orderBy, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
 // DOM Elements
 const ordersContainer = document.getElementById("orders-container");
@@ -156,6 +156,41 @@ function loadDeliveryOrders() {
     });
 }
 
+// Function to update order status and handle order type logic
+function updateOrderStatus(orderId, newStatus) {
+    // Get the order document
+    const orderRef = doc(db, "orders", orderId);
+
+    // Get the order data first
+    getDoc(orderRef).then((docSnapshot) => {
+        if (docSnapshot.exists()) {
+            const orderData = docSnapshot.data();
+            const deliveryMethod = orderData.deliveryMethod;
+
+            // Update the status
+            updateDoc(orderRef, { status: newStatus })
+                .then(() => {
+                    console.log("Order status updated successfully");
+
+                    // If the order is a delivery type and status is changed to "accepted"
+                    // then we need to make it visible to drivers
+                    if (deliveryMethod === "delivery" && newStatus === "accepted") {
+                        // Here you would typically update a separate collection for drivers
+                        // or set a flag that makes this order visible to drivers
+                        console.log("Delivery order is now visible to drivers");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error updating order status: ", error);
+                });
+        } else {
+            console.log("No such order!");
+        }
+    }).catch((error) => {
+        console.error("Error getting order: ", error);
+    });
+}
+
 // Render orders in the UI
 function renderOrders(orders) {
     // Clear orders container
@@ -238,6 +273,33 @@ function createOrderCard(order) {
         });
     }
 
+    // Add click event to accept order button if it exists
+    const acceptOrderBtn = orderCard.querySelector(".accept-order-btn");
+    if (acceptOrderBtn) {
+        acceptOrderBtn.addEventListener("click", () => {
+            const orderId = acceptOrderBtn.getAttribute("data-order-id");
+            updateOrderStatus(orderId, "accepted");
+        });
+    }
+
+    // Add click event to cancel order button if it exists
+    const cancelOrderBtn = orderCard.querySelector(".cancel-order-btn");
+    if (cancelOrderBtn) {
+        cancelOrderBtn.addEventListener("click", () => {
+            const orderId = cancelOrderBtn.getAttribute("data-order-id");
+            updateOrderStatus(orderId, "cancelled");
+        });
+    }
+
+    // Add click event to complete order button if it exists
+    const completeOrderBtn = orderCard.querySelector(".complete-order-btn");
+    if (completeOrderBtn) {
+        completeOrderBtn.addEventListener("click", () => {
+            const orderId = completeOrderBtn.getAttribute("data-order-id");
+            updateOrderStatus(orderId, "delivered");
+        });
+    }
+
     return orderCard;
 }
 
@@ -256,6 +318,20 @@ function getOrderStatusInfo(status) {
             return { class: "status-cancelled", text: "ملغي" };
         default:
             return { class: "status-pending", text: "قيد الانتظار" };
+    }
+}
+
+// Get order type text based on delivery method
+function getOrderTypeText(deliveryMethod) {
+    switch (deliveryMethod) {
+        case "delivery":
+            return "توصيل";
+        case "pickup":
+            return "استلام من المطعم";
+        case "dine-in":
+            return "تناول في المطعم";
+        default:
+            return "غير محدد";
     }
 }
 

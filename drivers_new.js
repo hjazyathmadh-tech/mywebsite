@@ -102,11 +102,12 @@ function setActiveMenuItem(activeItem) {
   activeItem.classList.add("active");
 }
 
-// عرض الطلبات التي حالتها "accepted" (مقبولة من المحاسب)
+// عرض الطلبات التي حالتها "accepted" ونوعها "delivery" (توصيل)
 function displayPendingOrders() {
   const ordersQuery = query(
     collection(db, "orders"),
-    where("status", "==", "accepted")
+    where("status", "==", "accepted"),
+    where("deliveryType", "==", "delivery")
   );
 
   fetchAndDisplayOrders(ordersQuery, "الطلبات المقبولة");
