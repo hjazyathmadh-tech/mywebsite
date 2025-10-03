@@ -225,10 +225,10 @@ async function completeOrder() {
     }
 
     try {
-        // Update order status to completed
+        // Update order status to delivered
         await updateDoc(doc(db, "orders", currentOrderId), {
-            status: "completed",
-            completedAt: new Date(),
+            status: "delivered",
+            deliveredAt: new Date(),
             driverId: auth.currentUser.uid
         });
 

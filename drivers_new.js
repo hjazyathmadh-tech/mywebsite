@@ -102,26 +102,25 @@ function setActiveMenuItem(activeItem) {
   activeItem.classList.add("active");
 }
 
-// عرض الطلبات المعلقة (حالة pending) ونوع التوصيل (delivery)
+// عرض الطلبات التي حالتها "accepted" (مقبولة من المحاسب)
 function displayPendingOrders() {
   const ordersQuery = query(
     collection(db, "orders"),
-    where("status", "==", "pending"),
-    where("deliveryType", "==", "delivery")
-  );
-
-  fetchAndDisplayOrders(ordersQuery, "طلبات جديدة");
-}
-
-// عرض الطلبات الجارية (حالة accepted)
-function displayInProgressOrders(driverId) {
-  const ordersQuery = query(
-    collection(db, "orders"),
-    where("driverId", "==", driverId),
     where("status", "==", "accepted")
   );
 
   fetchAndDisplayOrders(ordersQuery, "الطلبات المقبولة");
+}
+
+// عرض الطلبات الجارية (حالة ready)
+function displayInProgressOrders(driverId) {
+  const ordersQuery = query(
+    collection(db, "orders"),
+    where("driverId", "==", driverId),
+    where("status", "==", "ready")
+  );
+
+  fetchAndDisplayOrders(ordersQuery, "الطلبات الجارية");
 }
 
 // عرض الطلبات المكتملة (حالة completed)
@@ -253,14 +252,27 @@ function fetchAndDisplayOrders(ordersQuery, sectionTitle) {
 
 // إعداد مستمع للتحديثات الفورية للطلبات
 function setupOrdersListener(driverId) {
-  // استخدام onSnapshot للاستماع للتحديثات الفورية للطلبات المعلقة (توصيل فقط)
-  const pendingOrdersQuery = query(
+  // استخدام onSnapshot للاستماع للتحديثات الفورية للطلبات التي حالتها "accepted"
+  const acceptedOrdersQuery = query(
     collection(db, "orders"),
-    where("status", "==", "pending"),
-    where("deliveryType", "==", "delivery")
+    where("status", "==", "accepted")
   );
 
-  onSnapshot(pendingOrdersQuery, (snapshot) => {
+  onSnapshot(acceptedOrdersQuery, (snapshot) => {
+    // مسح المحتوى الحالي قبل إعادة الرسم
+    if (ordersContainer) {
+      ordersContainer.innerHTML = "";
+    }
+
+    // عرض الطلبات المقبولة
+    snapshot.forEach((doc) => {
+      const order = doc.data();
+      const orderCard = createOrderCard(doc.id, order);
+      if (ordersContainer) {
+        ordersContainer.appendChild(orderCard);
+      }
+    });
+
     updateStatistics();
   });
 
@@ -268,7 +280,7 @@ function setupOrdersListener(driverId) {
   const inProgressOrdersQuery = query(
     collection(db, "orders"),
     where("driverId", "==", driverId),
-    where("status", "==", "accepted")
+    where("status", "==", "ready")
   );
 
   onSnapshot(inProgressOrdersQuery, (snapshot) => {
@@ -279,7 +291,7 @@ function setupOrdersListener(driverId) {
   const completedOrdersQuery = query(
     collection(db, "orders"),
     where("driverId", "==", driverId),
-    where("status", "==", "completed")
+    where("status", "==", "delivered")
   );
 
   onSnapshot(completedOrdersQuery, (snapshot) => {
@@ -292,25 +304,24 @@ function updateStatistics() {
   const driverId = auth.currentUser ? auth.currentUser.uid : null;
   if (!driverId) return;
 
-  // الحصول على الطلبات المعلقة (توصيل فقط)
+  // الحصول على الطلبات التي حالتها "accepted" (مقبولة من المحاسب)
   const pendingOrdersQuery = query(
     collection(db, "orders"),
-    where("status", "==", "pending"),
-    where("deliveryType", "==", "delivery")
+    where("status", "==", "accepted")
   );
 
   // الحصول على الطلبات الجارية
   const inProgressOrdersQuery = query(
     collection(db, "orders"),
     where("driverId", "==", driverId),
-    where("status", "==", "accepted")
+    where("status", "==", "ready")
   );
 
   // الحصول على الطلبات المكتملة
   const completedOrdersQuery = query(
     collection(db, "orders"),
     where("driverId", "==", driverId),
-    where("status", "==", "completed")
+    where("status", "==", "delivered")
   );
 
   Promise.all([
@@ -358,10 +369,10 @@ function updateStatistics() {
 
 function translateStatus(status) {
   switch (status) {
-    case "pending": return "في الانتظار";
-    case "accepted": return "مقبول";
-    case "in_progress": return "قيد التنفيذ";
-    case "completed": return "مكتمل";
+    case "pending": return "بانتظار المحاسب";
+    case "accepted": return "مقبول من المحاسب";
+    case "ready": return "جاهز للتوصيل";
+    case "delivered": return "تم التوصيل";
     default: return status;
   }
 }
@@ -429,25 +440,16 @@ async function openModal(id, data) {
   if (statusUpdateButtons) {
     statusUpdateButtons.innerHTML = "";
 
-    if (data.status === "pending") {
+    if (data.status === "accepted") {
       const acceptOrderBtn = document.createElement("button");
       acceptOrderBtn.innerHTML = '<i class="fas fa-check"></i> قبول الطلب';
       acceptOrderBtn.className = "accept-btn";
       acceptOrderBtn.onclick = async () => {
-        // تحديث حالة الطلب إلى "accepted" أولاً
-        await updateOrderStatusInDB(id, "accepted");
-        // التوجيه إلى صفحة الخريطة مع تمرير معرف الطلب
+        await updateOrderStatusInDB(id, "ready");
+        // إعادة التوجيه إلى صفحة driver-map مع بيانات الطلب
         window.location.href = `driver-map.html?orderId=${id}`;
       };
       statusUpdateButtons.appendChild(acceptOrderBtn);
-    } else if (data.status === "in_progress") {
-      const completeOrderBtn = document.createElement("button");
-      completeOrderBtn.innerHTML = '<i class="fas fa-check-circle"></i> إنهاء الطلب';
-      completeOrderBtn.className = "complete-btn";
-      completeOrderBtn.onclick = async () => {
-        await updateOrderStatusInDB(id, "completed");
-      };
-      statusUpdateButtons.appendChild(completeOrderBtn);
     }
   }
 
@@ -476,6 +478,21 @@ async function updateOrderStatusInDB(orderId, newStatus) {
     } else if (newStatus === "in_progress") {
       await updateDoc(doc(db, "orders", orderId), {
         status: "in_progress",
+        driverId: driverId
+      });
+    } else if (newStatus === "ready") {
+      await updateDoc(doc(db, "orders", orderId), {
+        status: "ready",
+        driverId: driverId,
+        driverName: localStorage.getItem("driverName") || "سائق",
+        driverPhone: localStorage.getItem("driverPhone") || "",
+        carPlate: localStorage.getItem("vehiclePlate") || "",
+        driverPhoto: localStorage.getItem("driverPhoto") || ""
+      });
+    } else if (newStatus === "delivered") {
+      await updateDoc(doc(db, "orders", orderId), {
+        status: "delivered",
+        deliveredAt: new Date(),
         driverId: driverId
       });
     } else if (newStatus === "completed") {

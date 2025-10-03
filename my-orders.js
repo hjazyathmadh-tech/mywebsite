@@ -204,11 +204,11 @@ function getOrderStatusInfo(status) {
     switch (status) {
         case "pending":
             return { class: "status-pending", text: "قيد الانتظار" };
-        case "accepted":
-            return { class: "status-accepted", text: "مقبول" };
-        case "in_progress":
-            return { class: "status-in_progress", text: "قيد التنفيذ" };
-        case "delivered":
+        case "قيد التحضير":
+            return { class: "status-preparing", text: "قيد التحضير" };
+        case "جاهز":
+            return { class: "status-ready", text: "جاهز" };
+        case "تم التوصيل":
             return { class: "status-delivered", text: "تم التوصيل" };
         case "cancelled":
             return { class: "status-cancelled", text: "ملغي" };

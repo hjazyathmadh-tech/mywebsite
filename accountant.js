@@ -15,7 +15,9 @@ import { app, auth, db } from "./firebase.js";
 
 
 
-const ordersGrid = document.getElementById("orders-grid");
+const pendingOrdersGrid = document.getElementById("pending-orders-grid");
+const acceptedOrdersGrid = document.getElementById("accepted-orders-grid");
+const reportsTbody = document.getElementById("reports-tbody");
 const modal = document.getElementById("order-modal");
 const closeModalBtn = document.querySelector(".close-modal");
 const actionButtons = document.getElementById("action-buttons");
@@ -23,6 +25,11 @@ const accountantNameEl = document.getElementById("accountant-name");
 const totalRevenueEl = document.getElementById("total-revenue");
 const totalOrdersEl = document.getElementById("total-orders");
 const totalCustomersEl = document.getElementById("total-customers");
+const startDateInput = document.getElementById("start-date");
+const endDateInput = document.getElementById("end-date");
+const searchReportsBtn = document.getElementById("search-reports");
+const navLinks = document.querySelectorAll(".nav-link");
+const contentSections = document.querySelectorAll(".content-section");
 
 // التحقق من تسجيل الدخول وصلاحيات المحاسب
 onAuthStateChanged(auth, async (user) => {
@@ -42,56 +49,73 @@ onAuthStateChanged(auth, async (user) => {
 
 // إعداد مستمع للتحديثات الفورية للطلبات
 function setupOrdersListener() {
-  ordersGrid.innerHTML = "";
+  pendingOrdersGrid.innerHTML = "";
+  acceptedOrdersGrid.innerHTML = "";
   const ordersRef = collection(db, "orders");
 
   onSnapshot(ordersRef, (snapshot) => {
-  let totalRevenue = 0;
-  let customers = new Set();
+    let totalRevenue = 0;
+    let customers = new Set();
+    let pendingOrdersCount = 0;
+    let acceptedOrdersCount = 0;
 
     // مسح المحتوى الحالي قبل إعادة الرسم
-    ordersGrid.innerHTML = "";
+    pendingOrdersGrid.innerHTML = "";
+    acceptedOrdersGrid.innerHTML = "";
 
     snapshot.forEach((docu, index) => {
-    const data = docu.data();
-    const orderCard = document.createElement("div");
-    orderCard.className = "order-card";
-    orderCard.style.animationDelay = `${index * 0.1}s`;
+      const data = docu.data();
 
-    // Format date if available
-    let orderDate = "-";
-    if (data.createdAt) {
-      const date = data.createdAt.toDate();
-      orderDate = date.toLocaleDateString("ar-SA", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
+      // حساب الإحصائيات
+      totalRevenue += Number(data.total || 0);
+      if (data.customerName) customers.add(data.customerName);
+
+      // إنشاء بطاقة الطلب
+      const orderCard = document.createElement("div");
+      orderCard.className = "order-card";
+      orderCard.style.animationDelay = `${index * 0.1}s`;
+
+      // Format date if available
+      let orderDate = "-";
+      if (data.createdAt) {
+        const date = data.createdAt.toDate();
+        orderDate = date.toLocaleDateString("ar-SA", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+      }
+
+      orderCard.innerHTML = `
+        <div class="order-header">
+          <div class="order-id">#${docu.id}</div>
+          <div class="order-status status-${data.status}">${translateStatus(data.status)}</div>
+        </div>
+        <div class="order-customer">${data.customerName || "عميل غير معروف"}</div>
+        <div class="order-details">
+          <span>${orderDate}</span>
+          <span>${data.total || 0} ريال</span>
+        </div>
+      `;
+
+      // إضافة حدث النقر لفتح التفاصيل
+      orderCard.addEventListener("click", () => {
+        openModal(docu.id, data);
       });
-    }
 
-    orderCard.innerHTML = `
-      <div class="order-header">
-        <div class="order-id">#${docu.id}</div>
-        <div class="order-status status-${data.status}">${translateStatus(data.status)}</div>
-      </div>
-      <div class="order-customer">${data.customerName || "عميل غير معروف"}</div>
-      <div class="order-details">
-        <span>${orderDate}</span>
-        <span>${data.total || 0} ريال</span>
-      </div>
-    `;
-
-    orderCard.addEventListener("click", () => {
-      openModal(docu.id, data);
+      // توزيع الطلبات حسب الحالة
+      if (data.status === "pending") {
+        pendingOrdersGrid.appendChild(orderCard);
+        pendingOrdersCount++;
+      } else if (data.status === "accepted") {
+        acceptedOrdersGrid.appendChild(orderCard);
+        acceptedOrdersCount++;
+      }
     });
 
-    ordersGrid.appendChild(orderCard);
-    totalRevenue += Number(data.total || 0);
-    if (data.customerName) customers.add(data.customerName);
-  });
-
+    // تحديث الإحصائيات
     totalRevenueEl.textContent = totalRevenue + " ريال";
     totalOrdersEl.textContent = snapshot.size;
     totalCustomersEl.textContent = customers.size;
@@ -100,9 +124,8 @@ function setupOrdersListener() {
 
 function translateStatus(status) {
   switch (status) {
-    case "pending": return "قيد الانتظار";
-    case "preparing": return "قيد التحضير";
-    case "ready": return "جاهز";
+    case "pending": return "بانتظار المحاسب";
+    case "accepted": return "مقبول من المحاسب";
     case "delivered": return "تم التوصيل";
     default: return status;
   }
@@ -239,38 +262,17 @@ function renderActionButtons(orderId, currentStatus) {
 
   // إنشاء الأزرار حسب الحالة الحالية
   if (currentStatus === "pending") {
-    // زر قبول الطلب (ينقل الحالة إلى "قيد التحضير")
+    // زر قبول الطلب (ينقل الحالة إلى "accepted")
     const acceptBtn = document.createElement("button");
     acceptBtn.className = "action-btn accept";
     acceptBtn.innerHTML = '<i class="fas fa-check"></i> قبول الطلب';
     acceptBtn.onclick = async () => {
-      await updateDoc(doc(db, "orders", orderId), { status: "preparing" });
+      await updateDoc(doc(db, "orders", orderId), { status: "accepted" });
       closeModal();
     };
     actionButtons.appendChild(acceptBtn);
   } 
-  else if (currentStatus === "preparing") {
-    // زر إعلام بأن الطلب جاهز (ينقل الحالة إلى "جاهز")
-    const readyBtn = document.createElement("button");
-    readyBtn.className = "action-btn ready";
-    readyBtn.innerHTML = '<i class="fas fa-utensils"></i> الطلب جاهز';
-    readyBtn.onclick = async () => {
-      await updateDoc(doc(db, "orders", orderId), { status: "ready" });
-      closeModal();
-    };
-    actionButtons.appendChild(readyBtn);
-  }
-  else if (currentStatus === "ready") {
-    // زر تسليم الطلب للسائق (ينقل الحالة إلى "تم التوصيل")
-    const deliverBtn = document.createElement("button");
-    deliverBtn.className = "action-btn deliver";
-    deliverBtn.innerHTML = '<i class="fas fa-motorcycle"></i> تسليم الطلب';
-    deliverBtn.onclick = async () => {
-      await updateDoc(doc(db, "orders", orderId), { status: "delivered" });
-      closeModal();
-    };
-    actionButtons.appendChild(deliverBtn);
-  }
+  // لا توجد أزرار إضافية للمحاسب
 }
 
 // دالة مساعدة لتحويل مفاتيح التخصيص إلى أسماء واضحة
@@ -297,6 +299,116 @@ function closeModal() {
 
 closeModalBtn.addEventListener("click", closeModal);
 window.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+
+// إعداد التنقل بين الأقسام
+function setupNavigation() {
+  navLinks.forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      // إزالة الفئة النشطة من جميع الروابط
+      navLinks.forEach(l => l.classList.remove("active"));
+
+      // إضافة الفئة النشطة للرابط المضغوط عليه
+      link.classList.add("active");
+
+      // الحصول على معرف القسم المراد عرضه
+      const targetSectionId = link.getAttribute("data-section");
+
+      // إخفاء جميع الأقسام
+      contentSections.forEach(section => {
+        section.style.display = "none";
+      });
+
+      // عرض القسم المطلوب
+      const targetSection = document.getElementById(targetSectionId);
+      if (targetSection) {
+        targetSection.style.display = "block";
+      }
+    });
+  });
+}
+
+// إعداد البحث في التقارير
+function setupReportsSearch() {
+  searchReportsBtn.addEventListener("click", async () => {
+    const startDate = startDateInput.value;
+    const endDate = endDateInput.value;
+
+    if (!startDate || !endDate) {
+      alert("الرجاء تحديد تاريخ البداية والنهاية");
+      return;
+    }
+
+    // تحويل التواريخ إلى كائنات Date للمقارنة
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0); // بداية اليوم
+
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999); // نهاية اليوم
+
+    // مسح نتائج البحث السابقة
+    reportsTbody.innerHTML = "";
+
+    // الحصول على الطلبات من Firestore
+    const ordersRef = collection(db, "orders");
+    const querySnapshot = await getDocs(ordersRef);
+
+    let hasResults = false;
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+
+      // التحقق من وجود تاريخ الإنشاء
+      if (data.createdAt) {
+        const orderDate = data.createdAt.toDate();
+
+        // التحقق من أن التاريخ ضمن النطاق المحدد
+        if (orderDate >= start && orderDate <= end) {
+          hasResults = true;
+
+          // تنسيق التاريخ للعرض
+          const formattedDate = orderDate.toLocaleDateString("ar-SA", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+          });
+
+          // إنشاء صف جديد في الجدول
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>#${doc.id}</td>
+            <td>${data.customerName || "عميل غير معروف"}</td>
+            <td><span class="order-status status-${data.status}">${translateStatus(data.status)}</span></td>
+            <td>${formattedDate}</td>
+            <td>${data.total || 0} ريال</td>
+          `;
+
+          reportsTbody.appendChild(row);
+        }
+      }
+    });
+
+    // عرض رسالة إذا لم يتم العثور على نتائج
+    if (!hasResults) {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td colspan="5" style="text-align: center; padding: 20px;">
+          لا توجد طلبات في الفترة المحددة
+        </td>
+      `;
+      reportsTbody.appendChild(row);
+    }
+  });
+}
+
+// تهيئة الصفحة بعد تحميلها
+document.addEventListener("DOMContentLoaded", () => {
+  setupNavigation();
+  setupReportsSearch();
+});
 
 // تسجيل الخروج
 document.getElementById("logout-btn").addEventListener("click", async () => {
