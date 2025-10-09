@@ -416,6 +416,88 @@ function setupOrdersListener(driverId) {
 
     updateStatistics();
   });
+  
+// Create an order card element
+function createOrderCard(orderId, order) {
+    const orderCard = document.createElement("div");
+    orderCard.classList.add("order-card");
+
+    // Format date
+    let formattedDate = "غير محدد";
+    if (order.createdAt) {
+        const date = order.createdAt.toDate();
+        formattedDate = date.toLocaleDateString("ar-SA", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
+    // Get status class and text
+    const statusInfo = getOrderStatusInfo(order.status);
+    
+    orderCard.innerHTML = `
+        <div class="order-header">
+            <div class="order-number">طلب #${orderId.substring(0, 6)}</div>
+            <div class="order-status ${statusInfo ? statusInfo.class : ''}">${statusInfo ? statusInfo.text : order.status}</div>
+        </div>
+        <div class="order-details">
+            <div class="order-amount">${order.total ? order.total.toFixed(2) : '0.00'} ريال</div>
+            <div class="order-date">${formattedDate}</div>
+        </div>
+        <div class="order-footer">
+            <div>عرض التفاصيل</div>
+            <div class="order-actions">
+                <button class="track-order-btn" data-order-id="${orderId}">تتبع الطلب</button>
+                ${order.location && order.location.lat && order.location.lng ? 
+                    `<button class="view-location-btn" data-order-id="${orderId}" data-lat="${order.location.lat}" data-lng="${order.location.lng}">عرض الموقع</button>` : 
+                    ''}
+            </div>
+        </div>
+    `;
+
+    // Add click event to track order button
+    const trackOrderBtn = orderCard.querySelector(".track-order-btn");
+    if (trackOrderBtn) {
+        trackOrderBtn.addEventListener("click", () => {
+            window.location.href = `order-tracking.html?orderId=${orderId}`;
+        });
+    }
+
+    // Add click event to view location button if it exists
+    const viewLocationBtn = orderCard.querySelector(".view-location-btn");
+    if (viewLocationBtn) {
+        viewLocationBtn.addEventListener("click", () => {
+            const lat = parseFloat(viewLocationBtn.getAttribute("data-lat"));
+            const lng = parseFloat(viewLocationBtn.getAttribute("data-lng"));
+            showOrderMap(lat, lng);
+        });
+    }
+
+    return orderCard;
+}
+
+// Get status class and text based on order status
+function getOrderStatusInfo(status) {
+    switch (status) {
+        case "pending":
+            return { class: "status-pending", text: "قيد الانتظار" };
+        case "accepted":
+            return { class: "status-accepted", text: "مقبول" };
+        case "in_progress":
+            return { class: "status-in_progress", text: "قيد التنفيذ" };
+        case "ready":
+            return { class: "status-ready", text: "جاهز للتوصيل" };
+        case "delivered":
+            return { class: "status-delivered", text: "تم التوصيل" };
+        case "cancelled":
+            return { class: "status-cancelled", text: "ملغي" };
+        default:
+            return { class: "status-pending", text: "قيد الانتظار" };
+    }
+}
 
   // استخدام onSnapshot للاستماع للتحديثات الفورية للطلبات الجارية
   const inProgressOrdersQuery = query(
