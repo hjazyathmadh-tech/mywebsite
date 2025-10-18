@@ -1,6 +1,7 @@
 // Order Tracking Page JavaScript
 import { auth, db } from "./firebase.js";
-import { doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+// تم تعديل الاستيراد لإضافة getDoc لمعالجة خطأ Firebase
+import { doc, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
 // DOM Elements
 const mapContainer = document.getElementById("map");
@@ -105,7 +106,9 @@ function loadOrderData() {
                 updateMapWithDriverLocation();
             } else {
                 // Hide driver info card if no driver assigned
-                driverInfoCard.style.display = "none";
+                if (driverInfoCard) {
+                    driverInfoCard.style.display = "none";
+                }
             }
         } else {
             showError("الطلب غير موجود");
@@ -141,11 +144,12 @@ function updateOrderStatus() {
 
 // Update order details in the UI
 function updateOrderDetails() {
-    if (!order) return;
+    if (!order || !orderDetails) return;
 
     // Format date
     let formattedDate = "غير محدد";
-    if (order.createdAt) {
+    if (order.createdAt && order.createdAt.toDate) {
+        // التحقق من وجود toDate للتأكد من أنه Timestamp
         const date = order.createdAt.toDate();
         formattedDate = date.toLocaleDateString("ar-SA", {
             year: "numeric",
@@ -168,7 +172,7 @@ function updateOrderDetails() {
             </div>
             <div class="detail-item">
                 <div class="detail-label">المبلغ الإجمالي</div>
-                <div class="detail-value">${order.total.toFixed(2)} ريال</div>
+                <div class="detail-value">${order.total ? order.total.toFixed(2) : '0.00'} ريال</div>
             </div>
             <div class="detail-item">
                 <div class="detail-label">طريقة الاستلام</div>
@@ -186,15 +190,21 @@ function updateOrderDetails() {
 
 // Update driver info in the UI
 function updateDriverInfo() {
-    if (!order || !order.driverId) return;
+    if (!order || !order.driverId || !driverInfoCard || !driverInfo) return;
 
     driverInfoCard.style.display = "block";
 
+    // إذا لم تكن صورة السائق متوفرة في بيانات الطلب، قم بجلبها من قاعدة البيانات
+    if (!order.driverPhoto) {
+        // لا نحتاج لـ await هنا، فقط استدعاء الدالة
+        fetchDriverPhoto(order.driverId);
+    }
+
     driverInfo.innerHTML = `
         <div class="driver-info">
-            <div class="driver-avatar">
-                ${order.driverPhoto ? 
-                    `<img src="${order.driverPhoto}" alt="${order.driverName}">` : 
+            <div class="driver-avatar" id="driver-avatar-${order.driverId}">
+                ${order.driverPhoto ?
+                    `<img src="${order.driverPhoto}" alt="${order.driverName}">` :
                     `<i class="fas fa-user"></i>`
                 }
             </div>
@@ -217,8 +227,32 @@ function updateDriverInfo() {
     `;
 }
 
+// جلب صورة السائق من قاعدة البيانات
+// تم تصحيح الخطأ بإضافة getDoc إلى Imports
+async function fetchDriverPhoto(driverId) {
+    try {
+        const driverDoc = await getDoc(doc(db, "drivers", driverId));
+        if (driverDoc.exists()) {
+            const driverData = driverDoc.data();
+            if (driverData.imageUrl) {
+                // تحديث صورة السائق في الواجهة
+                const driverAvatar = document.getElementById(`driver-avatar-${driverId}`);
+                if (driverAvatar) {
+                    driverAvatar.innerHTML = `<img src="${driverData.imageUrl}" alt="${order.driverName}">`;
+                    // تحديث كائن الطلب محليًا (اختياري)
+                    order.driverPhoto = driverData.imageUrl;
+                }
+            }
+        }
+    } catch (error) {
+        console.error("خطأ في جلب صورة السائق:", error);
+    }
+}
+
 // Initialize Leaflet Map
 function initMap() {
+    if (!mapContainer) return;
+
     // Default location (Jeddah, Saudi Arabia)
     const defaultLocation = [21.485811, 39.192504];
 
@@ -249,7 +283,7 @@ function initMap() {
 
 // Update map with driver location
 function updateMapWithDriverLocation() {
-    if (!order || !order.driverId || !map) return;
+    if (!order || !order.driverId || !map || !driverMarker || !customerMarker) return;
 
     // Show driver marker
     driverMarker.setOpacity(1);
@@ -280,7 +314,7 @@ function updateMapWithDriverLocation() {
 // Simulate driver movement (for demo purposes)
 // In a real app, you would get the driver's location from your database
 function simulateDriverMovement() {
-    if (!order || !order.destinationLat || !order.destinationLng) return;
+    if (!order || !order.destinationLat || !order.destinationLng || !driverMarker) return;
 
     // Starting point (restaurant location)
     const startLocation = [21.485811, 39.192504];
@@ -318,11 +352,11 @@ function simulateDriverMovement() {
                 const etaMinutes = Math.max(1, Math.round(remainingSteps / 3));
 
                 // Update ETA in UI
-                etaContainer.style.display = "flex";
-                etaTime.textContent = `${etaMinutes} دقيقة`;
+                if (etaContainer) etaContainer.style.display = "flex";
+                if (etaTime) etaTime.textContent = `${etaMinutes} دقيقة`;
 
                 // Update ETA in order document
-                if (order) {
+                if (order && order.id) {
                     updateDoc(doc(db, "orders", order.id), {
                         eta: `${etaMinutes} دقيقة`
                     }).catch(error => {
@@ -337,11 +371,11 @@ function simulateDriverMovement() {
             setTimeout(moveDriver, 1000);
         } else {
             // When driver reaches destination
-            etaContainer.style.display = "flex";
-            etaTime.textContent = "وصل السائق";
+            if (etaContainer) etaContainer.style.display = "flex";
+            if (etaTime) etaTime.textContent = "وصل السائق";
 
             // Update order status to delivered
-            if (order) {
+            if (order && order.id) {
                 updateDoc(doc(db, "orders", order.id), {
                     status: "delivered",
                     deliveredAt: new Date()
@@ -358,6 +392,8 @@ function simulateDriverMovement() {
 
 // Update route line between driver and customer
 function updateRouteLine(driverLocation, customerLocation) {
+    if (!map) return;
+    
     // Remove existing route line if it exists
     if (routeLine) {
         map.removeLayer(routeLine);
@@ -394,21 +430,32 @@ function getOrderStatusInfo(status) {
 
 // Show error message
 function showError(message) {
-    mapContainer.innerHTML = `
-        <div class="error-container">
-            <i class="fas fa-exclamation-triangle"></i>
-            <h3>حدث خطأ</h3>
-            <p>${message}</p>
-        </div>
-    `;
+    if (mapContainer) {
+        mapContainer.innerHTML = `
+            <div class="error-container">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>حدث خطأ</h3>
+                <p>${message}</p>
+            </div>
+        `;
+    }
 
-    orderStatusContainer.innerHTML = `
-        <div class="error-container">
-            <i class="fas fa-exclamation-triangle"></i>
-            <h3>حدث خطأ</h3>
-            <p>${message}</p>
-        </div>
-    `;
+    if (orderStatusContainer) {
+        orderStatusContainer.innerHTML = `
+            <div class="error-container">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>حدث خطأ</h3>
+                <p>${message}</p>
+            </div>
+        `;
+    }
+    // إخفاء معلومات السائق إذا كان هناك خطأ
+    if (driverInfoCard) {
+        driverInfoCard.style.display = "none";
+    }
+    if (orderDetails) {
+        orderDetails.innerHTML = ""; // مسح تفاصيل الطلب
+    }
 }
 
 // Logout user
@@ -464,6 +511,9 @@ function setupMobileMenu() {
 
             // Add the cloned list to mobile menu content
             mobileMenuContent.appendChild(mobileNavList);
+        } else if (mobileMenuContent) {
+            // مسح محتوى القائمة إذا لم نعد في وضع الجوال
+            mobileMenuContent.innerHTML = "";
         }
     }
 
@@ -471,7 +521,7 @@ function setupMobileMenu() {
     setupMobileMenuContent();
 
     // Toggle mobile menu
-    if (mobileMenuBtn) {
+    if (mobileMenuBtn && mobileMenuSidebar && mobileMenuOverlay) {
         mobileMenuBtn.addEventListener("click", () => {
             if (isMobileView()) {
                 mobileMenuSidebar.classList.toggle("active");
@@ -497,12 +547,10 @@ function setupMobileMenu() {
 
     // Handle window resize
     window.addEventListener("resize", () => {
-        // If we switch from mobile to desktop view, close the mobile menu
+        setupMobileMenuContent();
+        // إغلاق القائمة الجانبية إذا تم تغيير الحجم إلى عرض سطح المكتب
         if (!isMobileView()) {
             closeMobileMenu();
-        } else {
-            // If we switch from desktop to mobile view, setup the mobile menu
-            setupMobileMenuContent();
         }
     });
 }

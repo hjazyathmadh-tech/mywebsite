@@ -3,16 +3,21 @@ import {
   collection,
   doc,
   getDocs,
+  getDoc,
   updateDoc,
   query,
   where,
   onSnapshot,
-  onAuthStateChanged,
   signOut,
-  auth,
   saveDriverInfo,
   loadDriverInfo
 } from "./firebase.js";
+
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+import { app } from "./firebase.js";
+
+const auth = getAuth(app);
+let driverId = null;
 
 // تعريف المتغيرات مع التحقق من وجود العناصر
 const ordersContainer = document.getElementById("ordersContainer");
@@ -32,25 +37,40 @@ let currentOrders = [];
 let completedOrders = [];
 
 // التحقق من تسجيل الدخول وصلاحيات السائق
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    driverId = user.uid;
+    console.log("🚗 السائق الحالي:", driverId);
+    
+    // عرض اسم السائق وصورته من التخزين المحلي
+    if (driverNameEl) {
+      driverNameEl.textContent = localStorage.getItem("driverName") || "السائق";
+    }
+
+    // تحميل صورة السائق
+    const driverProfileImage = document.getElementById("driverProfileImage");
+    if (driverProfileImage) {
+      const savedPhotoURL = localStorage.getItem("driverPhotoURL");
+      if (savedPhotoURL) {
+        driverProfileImage.src = savedPhotoURL;
+      }
+    }
+
+    // تحميل صورة السائق من قاعدة البيانات
+    loadDriverPhotoFromDatabase(driverId);
+    
+    // تهيئة صفحة السائق
+    initializeDriverPage();
+
+    // إعداد مستمعي أحداث القائمة الجانبية
+    setupMenuListeners(driverId);
+
+    // إعداد القائمة المنسدلة للجوال
+    setupMobileDropdownMenu();
+  } else {
+    console.log("❌ لم يتم تسجيل الدخول");
     window.location.href = "driver-login.html";
-    return;
   }
-
-  // عرض اسم السائق من التخزين المحلي
-  if (driverNameEl) {
-    driverNameEl.textContent = localStorage.getItem("driverName") || "السائق";
-  }
-
-  // إعداد مستمع للتحديثات الفورية للطلبات
-  setupOrdersListener(user.uid);
-
-  // إعداد مستمعي أحداث القائمة الجانبية
-  setupMenuListeners(user.uid);
-
-  // إعداد القائمة المنسدلة للجوال
-  setupMobileDropdownMenu();
 });
 
 // إعداد مستمعي أحداث القائمة الجانبية
@@ -189,10 +209,50 @@ function displayAccountInfo() {
   }
 }
 
+// تحميل صورة السائق من قاعدة البيانات
+async function loadDriverPhotoFromDatabase(driverId) {
+  try {
+    const driverDoc = await getDoc(doc(db, "drivers", driverId));
+    if (driverDoc.exists()) {
+      const data = driverDoc.data();
+
+      // جلب صورة السائق من Firestore
+      const driverProfileImage = document.getElementById("driverProfileImage");
+      if (driverProfileImage) {
+        if (data.imageUrl) {
+          driverProfileImage.src = data.imageUrl;
+          // حفظ رابط الصورة في التخزين المحلي
+          localStorage.setItem("driverPhotoURL", data.imageUrl);
+        } else {
+          // عرض الصورة الافتراضية
+          driverProfileImage.src = "images/driver-avatar.png";
+          localStorage.setItem("driverPhotoURL", "images/driver-avatar.png");
+        }
+      }
+
+      // تحديث صورة السائق في صفحة الحساب
+      const driverImage = document.getElementById("driverImage");
+      if (driverImage) {
+        if (data.imageUrl) {
+          driverImage.src = data.imageUrl;
+          driverImage.style.display = "block";
+        } else {
+          driverImage.src = "images/driver-avatar.png";
+          driverImage.style.display = "block";
+        }
+      }
+    }
+  } catch (error) {
+    console.error("خطأ في تحميل صورة السائق:", error);
+  }
+}
+
 // تحميل بيانات السائق المحفوظة مسبقًا
 async function loadDriverData() {
   try {
     await loadDriverInfo();
+    // تحديث صورة السائق في الشريط الجانبي
+    loadDriverPhotoFromDatabase(auth.currentUser.uid);
   } catch (error) {
     console.error("خطأ في تحميل بيانات السائق:", error);
     showNotification("حدث خطأ أثناء تحميل بياناتك", 'danger');
@@ -202,53 +262,14 @@ async function loadDriverData() {
 // إعداد مستمعي الأحداث لنموذج بيانات السائق
 function setupDriverFormListeners() {
   const driverForm = document.getElementById("driverForm");
-  const cameraBtn = document.getElementById("cameraBtn");
-  const galleryBtn = document.getElementById("galleryBtn");
-  const driverPhotoInput = document.getElementById("driverPhotoInput");
 
   // مستمع حدث إرسال النموذج
   if (driverForm) {
     driverForm.addEventListener("submit", saveDriverData);
   }
 
-  // مستمع حدث زر الكاميرا
-  if (cameraBtn) {
-    cameraBtn.addEventListener("click", () => {
-      // في بيئة حقيقية، سيتم فتح الكاميرا هنا
-      // الآن سنقوم بمحاكاة فتح المعرض
-      if (driverPhotoInput) {
-        driverPhotoInput.setAttribute("capture", "camera");
-        driverPhotoInput.click();
-      }
-    });
-  }
-
-  // مستمع حدث زر المعرض
-  if (galleryBtn) {
-    galleryBtn.addEventListener("click", () => {
-      if (driverPhotoInput) {
-        driverPhotoInput.removeAttribute("capture");
-        driverPhotoInput.click();
-      }
-    });
-  }
-
-  // مستمع حدث اختيار الصورة
-  if (driverPhotoInput) {
-    driverPhotoInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const photoPreview = document.getElementById("photoPreview");
-          if (photoPreview) {
-            photoPreview.innerHTML = `<img src="${event.target.result}" alt="صورة السائق">`;
-          }
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
+  // لم يعد النظام يحتاج إلى مستمعي أحداث للكاميرا والمعرض
+  // سيتم عرض الصورة مباشرة من قاعدة البيانات
 }
 
 // حفظ بيانات السائق
@@ -259,12 +280,11 @@ async function saveDriverData(e) {
   const driverNameInput = document.getElementById("driverNameInput");
   const phoneInput = document.getElementById("phoneInput");
   const plateNumberInput = document.getElementById("plateNumberInput");
-  const driverPhotoInput = document.getElementById("driverPhotoInput");
 
   const driverName = driverNameInput ? driverNameInput.value : "";
   const phone = phoneInput ? phoneInput.value : "";
   const plateNumber = plateNumberInput ? plateNumberInput.value : "";
-  const file = driverPhotoInput && driverPhotoInput.files.length > 0 ? driverPhotoInput.files[0] : null;
+  const file = null; // لن يتم رفع صورة من خلال هذا النموذج
 
   // التحقق من الحقول المطلوبة
   if (!driverName || !phone || !plateNumber) {
@@ -274,12 +294,21 @@ async function saveDriverData(e) {
 
   try {
     // حفظ البيانات في قاعدة البيانات والتخزين
-    await saveDriverInfo(driverName, phone, plateNumber, file);
+    await saveDriverInfo(driverName, phone, plateNumber, null);
 
     // حفظ البيانات في التخزين المحلي
     localStorage.setItem("driverName", driverName);
     localStorage.setItem("driverPhone", phone);
     localStorage.setItem("vehiclePlate", plateNumber);
+
+    // تحديث صورة السائق في الشريط الجانبي
+    const driverProfileImage = document.getElementById("driverProfileImage");
+    if (driverProfileImage) {
+      const savedPhotoURL = localStorage.getItem("driverPhotoURL");
+      if (savedPhotoURL) {
+        driverProfileImage.src = savedPhotoURL;
+      }
+    }
 
     // تحديث اسم السائق في الواجهة
     const driverNameEl = document.getElementById("driverName");
@@ -292,6 +321,52 @@ async function saveDriverData(e) {
     console.error("خطأ في حفظ بيانات السائق:", error);
     showNotification("حدث خطأ أثناء حفظ بياناتك", 'danger');
   }
+}
+
+// دالة لإنشاء بطاقة طلب
+function createOrderCard(orderId, orderData) {
+  const orderCard = document.createElement("div");
+  orderCard.classList.add("order-card");
+
+  // Format date if available
+  let orderTime = "-";
+  if (orderData.createdAt) {
+    const date = orderData.createdAt.toDate();
+    orderTime = date.toLocaleTimeString("ar-SA", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }
+
+  orderCard.innerHTML = `
+    <div class="order-header">
+      <div class="order-id">#${orderId.substring(0, 8)}</div>
+      <div class="order-status status-${orderData.status}">${translateStatus(orderData.status)}</div>
+    </div>
+    <div class="order-customer">
+      <i class="fas fa-user"></i> ${orderData.customerName || "عميل غير معروف"}
+    </div>
+    <div class="order-details">
+      <div class="detail-item">
+        <i class="fas fa-map-marker-alt"></i>
+        <span>${orderData.pickup || "مكان الانطلاق غير محدد"}</span>
+      </div>
+      <div class="detail-item">
+        <i class="fas fa-flag-checkered"></i>
+        <span>${orderData.destination || "مكان التوصيل غير محدد"}</span>
+      </div>
+      <div class="detail-item">
+        <i class="fas fa-clock"></i>
+        <span>${orderTime}</span>
+      </div>
+    </div>
+  `;
+
+  orderCard.addEventListener("click", () => {
+    openModal(orderId, orderData);
+  });
+
+  return orderCard;
 }
 
 // جلب وعرض الطلبات بناءً على الاستعلام المحدد
@@ -391,9 +466,31 @@ function fetchAndDisplayOrders(ordersQuery, sectionTitle) {
   });
 }
 
-// إعداد مستمع للتحديثات الفورية للطلبات
-function setupOrdersListener(driverId) {
-  // استخدام onSnapshot للاستماع للتحديثات الفورية للطلبات التي حالتها "accepted"
+// تهيئة صفحة السائق
+function initializeDriverPage() {
+  // الاستعلام عن الطلبات الجارية
+  const inProgressOrdersQuery = query(
+    collection(db, "orders"),
+    where("driverId", "==", driverId),
+    where("status", "==", "ready")
+  );
+
+  onSnapshot(inProgressOrdersQuery, (snapshot) => {
+    updateStatistics();
+  });
+
+  // الاستعلام عن الطلبات المكتملة
+  const completedOrdersQuery = query(
+    collection(db, "orders"),
+    where("driverId", "==", driverId),
+    where("status", "==", "delivered")
+  );
+
+  onSnapshot(completedOrdersQuery, (snapshot) => {
+    updateStatistics();
+  });
+
+  // الاستعلام عن الطلبات المقبولة
   const acceptedOrdersQuery = query(
     collection(db, "orders"),
     where("status", "==", "accepted")
@@ -416,88 +513,80 @@ function setupOrdersListener(driverId) {
 
     updateStatistics();
   });
-  
-// Create an order card element
-function createOrderCard(orderId, order) {
+}
+
+// إعداد مستمع للتحديثات الفورية للطلبات
+function setupOrdersListener(driverId) {
+  // استخدام onSnapshot للاستماع للتحديثات الفورية للطلبات التي حالتها "accepted"
+  const acceptedOrdersQuery = query(
+    collection(db, "orders"),
+    where("status", "==", "accepted")
+  );
+
+  onSnapshot(acceptedOrdersQuery, (snapshot) => {
+    // مسح المحتوى الحالي قبل إعادة الرسم
+    if (ordersContainer) {
+      ordersContainer.innerHTML = "";
+    }
+
+    // عرض الطلبات المقبولة
+    snapshot.forEach((doc) => {
+      const order = doc.data();
+      const orderCard = createOrderCard(doc.id, order);
+      if (ordersContainer) {
+        ordersContainer.appendChild(orderCard);
+      }
+    });
+  });
+
+  // دالة لإنشاء بطاقة طلب
+  function createOrderCard(orderId, orderData) {
     const orderCard = document.createElement("div");
     orderCard.classList.add("order-card");
-
-    // Format date
-    let formattedDate = "غير محدد";
-    if (order.createdAt) {
-        const date = order.createdAt.toDate();
-        formattedDate = date.toLocaleDateString("ar-SA", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
-        });
+    
+    // Format date if available
+    let orderTime = "-";
+    if (orderData.createdAt) {
+      const date = orderData.createdAt.toDate();
+      orderTime = date.toLocaleTimeString("ar-SA", {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
     }
-
-    // Get status class and text
-    const statusInfo = getOrderStatusInfo(order.status);
     
     orderCard.innerHTML = `
-        <div class="order-header">
-            <div class="order-number">طلب #${orderId.substring(0, 6)}</div>
-            <div class="order-status ${statusInfo ? statusInfo.class : ''}">${statusInfo ? statusInfo.text : order.status}</div>
+      <div class="order-header">
+        <div class="order-id">#${orderId.substring(0, 8)}</div>
+        <div class="order-status status-${orderData.status}">${translateStatus(orderData.status)}</div>
+      </div>
+      <div class="order-customer">
+        <i class="fas fa-user"></i> ${orderData.customerName || "عميل غير معروف"}
+      </div>
+      <div class="order-details">
+        <div class="detail-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>${orderData.pickup || "مكان الانطلاق غير محدد"}</span>
         </div>
-        <div class="order-details">
-            <div class="order-amount">${order.total ? order.total.toFixed(2) : '0.00'} ريال</div>
-            <div class="order-date">${formattedDate}</div>
+        <div class="detail-item">
+          <i class="fas fa-flag-checkered"></i>
+          <span>${orderData.destination || "مكان التوصيل غير محدد"}</span>
         </div>
-        <div class="order-footer">
-            <div>عرض التفاصيل</div>
-            <div class="order-actions">
-                <button class="track-order-btn" data-order-id="${orderId}">تتبع الطلب</button>
-                ${order.location && order.location.lat && order.location.lng ? 
-                    `<button class="view-location-btn" data-order-id="${orderId}" data-lat="${order.location.lat}" data-lng="${order.location.lng}">عرض الموقع</button>` : 
-                    ''}
-            </div>
+        <div class="detail-item">
+          <i class="fas fa-clock"></i>
+          <span>${orderTime}</span>
         </div>
+      </div>
     `;
-
-    // Add click event to track order button
-    const trackOrderBtn = orderCard.querySelector(".track-order-btn");
-    if (trackOrderBtn) {
-        trackOrderBtn.addEventListener("click", () => {
-            window.location.href = `order-tracking.html?orderId=${orderId}`;
-        });
-    }
-
-    // Add click event to view location button if it exists
-    const viewLocationBtn = orderCard.querySelector(".view-location-btn");
-    if (viewLocationBtn) {
-        viewLocationBtn.addEventListener("click", () => {
-            const lat = parseFloat(viewLocationBtn.getAttribute("data-lat"));
-            const lng = parseFloat(viewLocationBtn.getAttribute("data-lng"));
-            showOrderMap(lat, lng);
-        });
-    }
-
+    
+    orderCard.addEventListener("click", () => {
+      openModal(orderId, orderData);
+    });
+    
     return orderCard;
-}
+  }
 
-// Get status class and text based on order status
-function getOrderStatusInfo(status) {
-    switch (status) {
-        case "pending":
-            return { class: "status-pending", text: "قيد الانتظار" };
-        case "accepted":
-            return { class: "status-accepted", text: "مقبول" };
-        case "in_progress":
-            return { class: "status-in_progress", text: "قيد التنفيذ" };
-        case "ready":
-            return { class: "status-ready", text: "جاهز للتوصيل" };
-        case "delivered":
-            return { class: "status-delivered", text: "تم التوصيل" };
-        case "cancelled":
-            return { class: "status-cancelled", text: "ملغي" };
-        default:
-            return { class: "status-pending", text: "قيد الانتظار" };
-    }
-}
+    updateStatistics();
+  };
 
   // استخدام onSnapshot للاستماع للتحديثات الفورية للطلبات الجارية
   const inProgressOrdersQuery = query(
@@ -520,11 +609,10 @@ function getOrderStatusInfo(status) {
   onSnapshot(completedOrdersQuery, (snapshot) => {
     updateStatistics();
   });
-}
+
 
 // تحديث الإحصائيات
 function updateStatistics() {
-  const driverId = auth.currentUser ? auth.currentUser.uid : null;
   if (!driverId) return;
 
   // الحصول على الطلبات التي حالتها "accepted" (مقبولة من المحاسب)
@@ -683,8 +771,11 @@ async function openModal(id, data) {
 
 // دالة لتحديث حالة الطلب
 async function updateOrderStatusInDB(orderId, newStatus) {
-  // الحصول على معرف السائق الحالي
-  const driverId = auth.currentUser ? auth.currentUser.uid : null;
+  // استخدام معرف السائق العام
+  if (!driverId) {
+    console.error("لا يوجد سائق مسجل");
+    return;
+  }
 
   // استخدام دالة updateOrderStatus من firebase.js
   try {
@@ -847,7 +938,6 @@ function setupMobileDropdownMenu() {
     mobileAcceptedOrdersLink.addEventListener("click", (e) => {
       e.preventDefault();
       mobileDropdown.classList.remove("show");
-      const driverId = auth.currentUser ? auth.currentUser.uid : null;
       if (driverId) {
         displayInProgressOrders(driverId);
       }
@@ -858,7 +948,6 @@ function setupMobileDropdownMenu() {
     mobileCompletedOrdersLink.addEventListener("click", (e) => {
       e.preventDefault();
       mobileDropdown.classList.remove("show");
-      const driverId = auth.currentUser ? auth.currentUser.uid : null;
       if (driverId) {
         displayCompletedOrders(driverId);
       }

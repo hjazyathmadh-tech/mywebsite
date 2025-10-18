@@ -911,7 +911,7 @@
         <li><a href="#" id="account-link"><i class="fas fa-user"></i><span>حسابي</span></a></li>
       </ul>
       <div class="user-profile">
-        <img src="images/driver-avatar.png" alt="السائق" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM0Mjk4ZmIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMjAgMjF2LTJhNCA0IDAgMCAwLTQtNEg4YTQgNCAwIDAgMC00IDR2MiI+PC9wYXRoPjxjaXJjbGUgY3g9IjEyIiBjeT0iNyIgcj0iNCI+PC9jaXJjbGU+PC9zdmc+'">
+        <img id="driverProfileImage" src="https://i.ibb.co/default-avatar.png" alt="صورة السائق" onerror="this.src='https://i.ibb.co/default-avatar.png'">
         <span id="driverName">السائق</span>
       </div>
     </div>
@@ -989,20 +989,12 @@
               <input type="text" id="plateNumberInput" class="form-control" required>
             </div>
             <div class="form-group">
-              <label for="driverPhoto">صورة السائق</label>
+              <label>صورة السائق</label>
               <div class="photo-upload-container">
-                <div id="photoPreview" class="photo-preview">
+                <img id="driverImage" style="display: none; width: 100%; height: auto; border-radius: 10px; margin-top: 15px;" alt="صورة السائق">
+                <div id="photoPreview" class="photo-preview" style="display: none;">
                   <i class="fas fa-user"></i>
                 </div>
-                <div class="photo-buttons">
-                  <button type="button" id="cameraBtn" class="btn-secondary">
-                    <i class="fas fa-camera"></i> الكاميرا
-                  </button>
-                  <button type="button" id="galleryBtn" class="btn-secondary">
-                    <i class="fas fa-images"></i> المعرض
-                  </button>
-                </div>
-                <input type="file" id="driverPhotoInput" accept="image/*" style="display: none;">
               </div>
             </div>
             <div class="form-actions">

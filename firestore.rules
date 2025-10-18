@@ -6,6 +6,9 @@ service cloud.firestore {
       allow read: if request.auth != null && (
         request.auth.uid == resource.data.userId ||       // العميل يقرأ طلباته
         resource.data.status == "pending" ||               // السائق يقرأ الطلبات الجديدة
+        resource.data.status == "accepted" ||              // السائق يقرأ الطلبات المقبولة
+        resource.data.status == "in_progress" ||           // السائق يقرأ الطلبات قيد التنفيذ
+        resource.data.status == "completed" ||             // السائق يقرأ الطلبات المكتملة
         resource.data.driverId == request.auth.uid ||      // السائق يقرأ طلباته
         request.auth.token.accountant == true              // المحاسب يقرأ الكل
       );
@@ -53,6 +56,8 @@ service cloud.firestore {
 
       allow read, create, delete: if request.auth != null &&
         request.auth.token.accountant == true;
+        
+      allow read: if request.auth != null;
     }
   }
 }

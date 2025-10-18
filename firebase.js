@@ -3,6 +3,28 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
 
+// دالة عرض الإشعارات
+window.showNotification = function(message, type = "info") {
+  const notification = document.createElement("div");
+  notification.className = `notification notification-${type}`;
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  // إظهار الإشعار
+  setTimeout(() => {
+    notification.classList.add("show");
+  }, 10);
+  
+  // إخفاء الإشعار بعد 3 ثواني
+  setTimeout(() => {
+    notification.classList.remove("show");
+    setTimeout(() => {
+      document.body.removeChild(notification);
+    }, 300);
+  }, 3000);
+};
+
 import {
   getFirestore,
   collection,
@@ -447,43 +469,103 @@ export async function driverLogout() {
   }
 }
 
-// دالة لحفظ بيانات السائق
+// دالة لحفظ بيانات السائق مع الصورة في Firebase Storage
 export async function saveDriverInfo(name, phone, plate, file) {
   const user = auth.currentUser;
-  if (!user) return alert("⚠️ يجب تسجيل الدخول");
-
-  let photoURL = "";
-  if (file) {
-    const storageRef = ref(storage, `drivers/${user.uid}/profile.jpg`);
-    await uploadBytes(storageRef, file);
-    photoURL = await getDownloadURL(storageRef);
+  if (!user) {
+    showNotification("⚠️ يجب تسجيل الدخول", 'warning');
+    return;
   }
 
-  await setDoc(doc(db, "drivers", user.uid), {
-    name: name,
-    phone: phone,
-    plate: plate,
-    photo: photoURL,
-    updatedAt: new Date()
-  }, { merge: true });
+  let imageUrl = "";
+  if (file) {
+    try {
+      // رفع الصورة إلى Firebase Storage بالمسار المحدد
+      const storageRef = ref(storage, `drivers/${user.uid}/profile.jpg`);
+      await uploadBytes(storageRef, file);
+      imageUrl = await getDownloadURL(storageRef);
+    } catch (error) {
+      console.error("خطأ في رفع الصورة:", error);
+      showNotification("حدث خطأ أثناء رفع الصورة", 'danger');
+      return;
+    }
+  }
 
-  alert("✅ تم حفظ بياناتك بنجاح");
+  try {
+    // تحديث بيانات السائق في Firestore مع الحفاظ على imageUrl
+    const driverRef = doc(db, "drivers", user.uid);
+    const updateData = {
+      name: name,
+      phone: phone,
+      plate: plate,
+      updatedAt: new Date()
+    };
+    
+    // إضافة imageUrl فقط إذا تم رفع صورة جديدة
+    if (imageUrl) {
+      updateData.imageUrl = imageUrl;
+    }
+    
+    await updateDoc(driverRef, updateData);
+
+    showNotification("تم حفظ بياناتك بنجاح", 'success');
+    return imageUrl; // إرجاع رابط الصورة لتحديث الواجهة
+  } catch (error) {
+    console.error("خطأ في حفظ بيانات السائق:", error);
+    showNotification("حدث خطأ أثناء حفظ بياناتك", 'danger');
+    return;
+  }
 }
 
-// دالة لعرض البيانات عند تحميل صفحة "حسابي"
+// دالة لعرض بيانات السائق عند تحميل صفحة "حسابي"
 export async function loadDriverInfo() {
   const user = auth.currentUser;
   if (!user) return;
 
-  const driverSnap = await getDoc(doc(db, "drivers", user.uid));
-  if (driverSnap.exists()) {
-    const data = driverSnap.data();
-    document.getElementById("driverNameInput").value = data.name || "";
-    document.getElementById("phoneInput").value = data.phone || "";
-    document.getElementById("plateNumberInput").value = data.plate || "";
-    if (data.photo) {
+  try {
+    const driverSnap = await getDoc(doc(db, "drivers", user.uid));
+    if (driverSnap.exists()) {
+      const data = driverSnap.data();
+
+      // تحديث حقول النموذج
+      const driverNameInput = document.getElementById("driverNameInput");
+      if (driverNameInput) driverNameInput.value = data.name || "";
+
+      const phoneInput = document.getElementById("phoneInput");
+      if (phoneInput) phoneInput.value = data.phone || "";
+
+      const plateNumberInput = document.getElementById("plateNumberInput");
+      if (plateNumberInput) plateNumberInput.value = data.plate || "";
+
+      // عرض صورة السائق
       const photoPreview = document.getElementById("photoPreview");
-      photoPreview.innerHTML = `<img src="${data.photo}" alt="صورة السائق">`;
+      const driverImage = document.getElementById("driverImage");
+
+      if (data.imageUrl) {
+        // عرض الصورة في معاينة النموذج
+        if (photoPreview) {
+          photoPreview.innerHTML = `<img src="${data.imageUrl}" alt="صورة السائق">`;
+        }
+
+        // عرض الصورة في صفحة السائق
+        if (driverImage) {
+          driverImage.src = data.imageUrl;
+        }
+      } else {
+        // عرض الصورة الافتراضية إذا لم تكن هناك صورة
+        const defaultImage = "images/driver-avatar.png";
+
+        if (photoPreview) {
+          photoPreview.innerHTML = `<img src="${defaultImage}" alt="صورة السائق الافتراضية">`;
+        }
+
+        if (driverImage) {
+          driverImage.src = defaultImage;
+        }
+      }
     }
+  } catch (error) {
+    console.error("خطأ في تحميل بيانات السائق:", error);
+    showNotification("حدث خطأ أثناء تحميل بياناتك", 'danger');
   }
 }
