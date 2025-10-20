@@ -104,6 +104,8 @@ function loadOrderData() {
             if (order.driverId) {
                 updateDriverInfo();
                 updateMapWithDriverLocation();
+                // Start listening for driver location updates
+                listenForDriverLocationUpdates();
             } else {
                 // Hide driver info card if no driver assigned
                 if (driverInfoCard) {
@@ -264,8 +266,26 @@ function initMap() {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Create customer marker (default marker)
-    customerMarker = L.marker(defaultLocation).addTo(map);
+    // Create customer marker (red pin icon)
+    customerMarker = L.marker(defaultLocation, {
+        icon: L.divIcon({
+            className: 'map-arrow-icon',
+            html: `<div style="
+                width: 0;
+                height: 0;
+                border-left: 10px solid transparent;
+                border-right: 10px solid transparent;
+                border-bottom: 20px solid blue;
+                transform: rotate(0deg);
+            "></div>`,
+            iconSize: [20, 20],
+            iconAnchor: [10, 20],
+            popupAnchor: [0, -20]
+        })
+    }).addTo(map);
+    
+    customerMarker.bindPopup("موقع العميل");
+    
 
     // Create driver marker (car icon)
     driverMarker = L.marker(defaultLocation, {
@@ -276,6 +296,7 @@ function initMap() {
             popupAnchor: [0, -20]
         })
     }).addTo(map);
+    driverMarker.bindPopup("موقع السائق");
 
     // Hide driver marker initially
     driverMarker.setOpacity(0);
@@ -289,105 +310,70 @@ function updateMapWithDriverLocation() {
     driverMarker.setOpacity(1);
 
     // Update customer location if available
-    if (order.destinationLat && order.destinationLng) {
-        const customerLocation = [order.destinationLat, order.destinationLng];
+    if (order.location && order.location.lat && order.location.lng) {
+        const customerLocation = [order.location.lat, order.location.lng];
         customerMarker.setLatLng(customerLocation);
+        customerMarker.bindPopup("موقع العميل").openPopup();
 
         // Update map view to show both markers
         const group = new L.featureGroup([customerMarker, driverMarker]);
         map.fitBounds(group.getBounds().pad(0.1));
     }
 
-    // Start watching driver location
-    if (navigator.geolocation) {
-        // Clear any existing watch
-        if (watchId) {
-            navigator.geolocation.clearWatch(watchId);
-        }
+    // Watch for driver location updates in real-time
+    if (order.driverId) {
+        // Set up a listener for driver location updates
+        const driverDocRef = doc(db, "drivers", order.driverId);
+        onSnapshot(driverDocRef, (docSnap) => {
+            if (docSnap.exists() && docSnap.data().location) {
+                const driverData = docSnap.data();
+                if (driverData.location.lat && driverData.location.lng) {
+                    // Update driver marker position
+                    const driverLocation = [driverData.location.lat, driverData.location.lng];
+                    driverMarker.setLatLng(driverLocation);
+                    driverMarker.bindPopup("موقع السائق").openPopup();
 
-        // For demo purposes, we'll simulate driver movement
-        // In a real app, you would get the driver's location from your database
-        simulateDriverMovement();
+                    // Update route line
+                    if (order.location && order.location.lat && order.location.lng) {
+                        const customerLocation = [order.location.lat, order.location.lng];
+                        updateRouteLine(driverLocation, customerLocation);
+                    }
+                }
+            }
+        });
     }
 }
 
-// Simulate driver movement (for demo purposes)
-// In a real app, you would get the driver's location from your database
-function simulateDriverMovement() {
-    if (!order || !order.destinationLat || !order.destinationLng || !driverMarker) return;
-
-    // Starting point (restaurant location)
-    const startLocation = [21.485811, 39.192504];
-
-    // Destination (customer location)
-    const destination = [order.destinationLat, order.destinationLng];
-
-    // Set driver to starting point
-    driverMarker.setLatLng(startLocation);
-
-    // Calculate steps for movement simulation
-    const steps = 30;
-    let currentStep = 0;
-
-    // Calculate step increments
-    const latStep = (destination[0] - startLocation[0]) / steps;
-    const lngStep = (destination[1] - startLocation[1]) / steps;
-
-    // Function to move driver marker
-    const moveDriver = () => {
-        if (currentStep <= steps) {
-            // Calculate new position
-            const newLat = startLocation[0] + (latStep * currentStep);
-            const newLng = startLocation[1] + (lngStep * currentStep);
-
-            // Update driver marker position
-            driverMarker.setLatLng([newLat, newLng]);
-
-            // Update route line
-            updateRouteLine([newLat, newLng], destination);
-
-            // Calculate ETA based on remaining distance
-            if (currentStep > 0) {
-                const remainingSteps = steps - currentStep;
-                const etaMinutes = Math.max(1, Math.round(remainingSteps / 3));
-
-                // Update ETA in UI
-                if (etaContainer) etaContainer.style.display = "flex";
-                if (etaTime) etaTime.textContent = `${etaMinutes} دقيقة`;
-
-                // Update ETA in order document
-                if (order && order.id) {
-                    updateDoc(doc(db, "orders", order.id), {
-                        eta: `${etaMinutes} دقيقة`
-                    }).catch(error => {
-                        console.error("Error updating ETA:", error);
-                    });
+// Listen for order updates to get driver location
+function listenForDriverLocationUpdates() {
+    if (!order || !order.id) return;
+    
+    const orderRef = doc(db, "orders", order.id);
+    
+    onSnapshot(orderRef, (docSnap) => {
+        if (docSnap.exists()) {
+            const orderData = docSnap.data();
+            
+            // Update driver location if available
+            if (orderData.driverLocation && orderData.driverLocation.lat && orderData.driverLocation.lng) {
+                const driverLocation = [orderData.driverLocation.lat, orderData.driverLocation.lng];
+                driverMarker.setLatLng(driverLocation);
+                driverMarker.bindPopup("موقع السائق").openPopup();
+                
+                // Update route line
+                if (orderData.location && orderData.location.lat && orderData.location.lng) {
+                    const customerLocation = [orderData.location.lat, orderData.location.lng];
+                    updateRouteLine(driverLocation, customerLocation);
                 }
             }
-
-            currentStep++;
-
-            // Continue movement
-            setTimeout(moveDriver, 1000);
-        } else {
-            // When driver reaches destination
-            if (etaContainer) etaContainer.style.display = "flex";
-            if (etaTime) etaTime.textContent = "وصل السائق";
-
-            // Update order status to delivered
-            if (order && order.id) {
-                updateDoc(doc(db, "orders", order.id), {
-                    status: "delivered",
-                    deliveredAt: new Date()
-                }).catch(error => {
-                    console.error("Error updating order status:", error);
-                });
+            
+            // Update ETA if available
+            if (orderData.eta) {
+                if (etaContainer) etaContainer.style.display = "flex";
+                if (etaTime) etaTime.textContent = orderData.eta;
             }
         }
-    };
-
-    // Start movement after a delay
-    setTimeout(moveDriver, 2000);
+    });
 }
 
 // Update route line between driver and customer
