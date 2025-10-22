@@ -103,9 +103,29 @@ function loadOrderData() {
             // If order has a driver assigned, update driver info and map
             if (order.driverId) {
                 updateDriverInfo();
+
+                // Update driver location directly from the order document
+                if (order.driverLocation && order.driverLocation.lat && order.driverLocation.lng) {
+                    // طباعة موقع السائق من Firebase في الـ Console
+                    console.log("📍 موقع السائق من Firebase (في loadOrderData):", order.driverLocation.lat, order.driverLocation.lng);
+
+                    // Update driver marker position
+                    const driverLocation = [order.driverLocation.lat, order.driverLocation.lng];
+                    if (driverMarker) {
+                        driverMarker.setLatLng(driverLocation);
+                        driverMarker.setOpacity(1);
+                        driverMarker.bindPopup("موقع السائق").openPopup();
+
+                        // Update route line
+                        if (order.location && order.location.lat && order.location.lng) {
+                            const customerLocation = [order.location.lat, order.location.lng];
+                            updateRouteLine(driverLocation, customerLocation);
+                        }
+                    }
+                }
+
+                // Call updateMapWithDriverLocation to set up real-time updates
                 updateMapWithDriverLocation();
-                // Start listening for driver location updates
-                listenForDriverLocationUpdates();
             } else {
                 // Hide driver info card if no driver assigned
                 if (driverInfoCard) {
@@ -304,7 +324,7 @@ function initMap() {
 
 // Update map with driver location
 function updateMapWithDriverLocation() {
-    if (!order || !order.driverId || !map || !driverMarker || !customerMarker) return;
+    if (!order || !order.id || !map || !driverMarker || !customerMarker) return;
 
     // Show driver marker
     driverMarker.setOpacity(1);
@@ -320,27 +340,50 @@ function updateMapWithDriverLocation() {
         map.fitBounds(group.getBounds().pad(0.1));
     }
 
-    // Watch for driver location updates in real-time
-    if (order.driverId) {
-        // Set up a listener for driver location updates
-        const driverDocRef = doc(db, "drivers", order.driverId);
-        onSnapshot(driverDocRef, (docSnap) => {
-            if (docSnap.exists() && docSnap.data().location) {
-                const driverData = docSnap.data();
-                if (driverData.location.lat && driverData.location.lng) {
-                    // Update driver marker position
-                    const driverLocation = [driverData.location.lat, driverData.location.lng];
-                    driverMarker.setLatLng(driverLocation);
-                    driverMarker.bindPopup("موقع السائق").openPopup();
+    // Watch for driver location updates in real-time from the order document
+    const orderRef = doc(db, "orders", order.id);
+    onSnapshot(orderRef, (docSnap) => {
+        if (docSnap.exists()) {
+            const orderData = docSnap.data();
 
-                    // Update route line
-                    if (order.location && order.location.lat && order.location.lng) {
-                        const customerLocation = [order.location.lat, order.location.lng];
-                        updateRouteLine(driverLocation, customerLocation);
-                    }
-                }
+            // Update order object with latest data
+            order = {
+                id: order.id,
+                ...orderData
+            };
+
+            // Update driver location if available
+            if (orderData.driverLocation && orderData.driverLocation.lat && orderData.driverLocation.lng) {
+                // طباعة موقع السائق من Firebase في الـ Console
+                console.log("📍 موقع السائق من Firebase:", orderData.driverLocation.lat, orderData.driverLocation.lng);
+
+                // Update driver marker position
+                updateDriverMarker(orderData.driverLocation.lat, orderData.driverLocation.lng);
             }
-        });
+
+            // Update ETA if available
+            if (orderData.eta) {
+                if (etaContainer) etaContainer.style.display = "flex";
+                if (etaTime) etaTime.textContent = orderData.eta;
+            } else {
+                etaContainer.style.display = "none";
+            }
+        }
+    });
+}
+
+// Update driver marker position
+function updateDriverMarker(lat, lng) {
+    if (!driverMarker || !map) return;
+
+    const driverLocation = [lat, lng];
+    driverMarker.setLatLng(driverLocation);
+    driverMarker.bindPopup("موقع السائق").openPopup();
+
+    // Update route line
+    if (order && order.location && order.location.lat && order.location.lng) {
+        const customerLocation = [order.location.lat, order.location.lng];
+        updateRouteLine(driverLocation, customerLocation);
     }
 }
 
@@ -356,6 +399,9 @@ function listenForDriverLocationUpdates() {
             
             // Update driver location if available
             if (orderData.driverLocation && orderData.driverLocation.lat && orderData.driverLocation.lng) {
+                // طباعة موقع السائق من Firebase في الـ Console
+                console.log("📍 موقع السائق من Firebase (في دالة listenForDriverLocationUpdates):", orderData.driverLocation.lat, orderData.driverLocation.lng);
+
                 const driverLocation = [orderData.driverLocation.lat, orderData.driverLocation.lng];
                 driverMarker.setLatLng(driverLocation);
                 driverMarker.bindPopup("موقع السائق").openPopup();

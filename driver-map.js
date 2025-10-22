@@ -138,7 +138,7 @@ function trackDriverLocation(orderLocation) {
 
     // Start watching driver's position
     watchId = navigator.geolocation.watchPosition(
-        (position) => {
+        async (position) => {
             const driverLocation = [position.coords.latitude, position.coords.longitude];
 
             // Update or create driver marker
@@ -159,6 +159,19 @@ function trackDriverLocation(orderLocation) {
             // Draw route if customer location is available
             if (orderLocation && orderLocation.lat && orderLocation.lng) {
                 drawRoute(driverLocation, [orderLocation.lat, orderLocation.lng]);
+            }
+
+            // Persist driver location to Firestore for real-time tracking on order-tracking page
+            try {
+                await updateDoc(doc(db, "orders", currentOrderId), {
+                    driverLocation: {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                        updatedAt: new Date()
+                    }
+                });
+            } catch (err) {
+                console.error("Failed to update driver location in Firestore:", err);
             }
         },
         (error) => {
