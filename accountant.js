@@ -195,9 +195,130 @@ async function openModal(id, data) {
   const customizationsContainer = document.getElementById("modal-customizations");
   customizationsContainer.innerHTML = "";
 
+  // عرض بنية البيانات في الـ Console للتحقق
+  console.log("بيانات الطلب:", data);
+
   // التحقق من وجود تخصيصات في العناصر
   let hasCustomizations = false;
 
+  if (data.items && Array.isArray(data.items)) {
+    data.items.forEach((item, index) => {
+      // عرض الإضافات (extras)
+      if (item.extras && Array.isArray(item.extras) && item.extras.length > 0) {
+        hasCustomizations = true;
+
+        const extrasSection = document.createElement("div");
+        extrasSection.style.marginBottom = "15px";
+
+        const extrasTitle = document.createElement("h4");
+        extrasTitle.textContent = `إضافات ${item.name || `المنتج ${index + 1}`}`;
+        extrasTitle.style.marginBottom = "8px";
+        extrasTitle.style.color = "var(--dark-color)";
+        extrasSection.appendChild(extrasTitle);
+
+        item.extras.forEach(extra => {
+          if (extra.checked) {
+            const extraElement = document.createElement("div");
+            extraElement.className = "customization-item";
+
+            const extraName = document.createElement("span");
+            extraName.className = "customization-item-name";
+            extraName.textContent = extra.name || "إضافة غير معروفة";
+
+            const extraPrice = document.createElement("span");
+            extraPrice.className = "customization-item-value";
+            extraPrice.textContent = extra.price ? `+${extra.price} ريال` : "مضافة";
+
+            extraElement.appendChild(extraName);
+            extraElement.appendChild(extraPrice);
+            extrasSection.appendChild(extraElement);
+          }
+        });
+
+        customizationsContainer.appendChild(extrasSection);
+      }
+
+      // عرض الصلصات (sauces)
+      if (item.sauces && Array.isArray(item.sauces) && item.sauces.length > 0) {
+        hasCustomizations = true;
+
+        const saucesSection = document.createElement("div");
+        saucesSection.style.marginBottom = "15px";
+
+        const saucesTitle = document.createElement("h4");
+        saucesTitle.textContent = `صلصات ${item.name || `المنتج ${index + 1}`}`;
+        saucesTitle.style.marginBottom = "8px";
+        saucesTitle.style.color = "var(--dark-color)";
+        saucesSection.appendChild(saucesTitle);
+
+        item.sauces.forEach(sauce => {
+          if (sauce.checked) {
+            const sauceElement = document.createElement("div");
+            sauceElement.className = "customization-item";
+
+            const sauceName = document.createElement("span");
+            sauceName.className = "customization-item-name";
+            sauceName.textContent = sauce.name || "صلصة غير معروفة";
+
+            const sauceValue = document.createElement("span");
+            sauceValue.className = "customization-item-value";
+            sauceValue.textContent = "مضافة";
+
+            sauceElement.appendChild(sauceName);
+            sauceElement.appendChild(sauceValue);
+            saucesSection.appendChild(sauceElement);
+          }
+        });
+
+        customizationsContainer.appendChild(saucesSection);
+      }
+
+      // عرض المكونات الأساسية (baseIngredients)
+      if (item.baseIngredients && Array.isArray(item.baseIngredients) && item.baseIngredients.length > 0) {
+        hasCustomizations = true;
+
+        const ingredientsSection = document.createElement("div");
+        ingredientsSection.style.marginBottom = "15px";
+
+        const ingredientsTitle = document.createElement("h4");
+        ingredientsTitle.textContent = `مكونات ${item.name || `المنتج ${index + 1}`}`;
+        ingredientsTitle.style.marginBottom = "8px";
+        ingredientsTitle.style.color = "var(--dark-color)";
+        ingredientsSection.appendChild(ingredientsTitle);
+
+        item.baseIngredients.forEach(ingredient => {
+          if (ingredient.checked) {
+            const ingredientElement = document.createElement("div");
+            ingredientElement.className = "customization-item";
+
+            const ingredientName = document.createElement("span");
+            ingredientName.className = "customization-item-name";
+            ingredientName.textContent = ingredient.name || "مكون غير معروف";
+
+            const ingredientValue = document.createElement("span");
+            ingredientValue.className = "customization-item-value";
+            ingredientValue.textContent = "مُضاف";
+
+            ingredientElement.appendChild(ingredientName);
+            ingredientElement.appendChild(ingredientValue);
+            ingredientsSection.appendChild(ingredientElement);
+          }
+        });
+
+        customizationsContainer.appendChild(ingredientsSection);
+      }
+    });
+  }
+
+  // إذا لم يتم العثور على تخصيصات
+  if (!hasCustomizations) {
+    const noCustomizationsElement = document.createElement("div");
+    noCustomizationsElement.className = "customization-item";
+    noCustomizationsElement.innerHTML = "<span>لا يوجد تخصيص</span>";
+    customizationsContainer.appendChild(noCustomizationsElement);
+  }
+
+  // التحقق من وجود تخصيصات في العناصر
   if (data.items && Array.isArray(data.items)) {
     data.items.forEach(item => {
       if (item.customizations && Object.keys(item.customizations).length > 0) {
@@ -242,13 +363,36 @@ async function openModal(id, data) {
   if (!hasCustomizations) {
     const noCustomizationsElement = document.createElement("div");
     noCustomizationsElement.className = "customization-item";
-    noCustomizationsElement.innerHTML = "<span>لا توجد تخصيصات</span>";
+    noCustomizationsElement.innerHTML = "<span>لا يوجد تخصيص</span>";
     customizationsContainer.appendChild(noCustomizationsElement);
   }
 
   // عرض الملاحظات
   const orderNotes = document.getElementById("modal-order-notes");
-  orderNotes.textContent = data.notes || "لا توجد ملاحظات";
+
+  // جمع الملاحظات من الطلب الرئيسي وعناصر الطلب
+  let allNotes = [];
+
+  // إضافة الملاحظات الرئيسية إن وجدت
+  if (data.notes && data.notes.trim() !== "") {
+    allNotes.push(data.notes);
+  }
+
+  // إضافة ملاحظات العناصر إن وجدت
+  if (data.items && Array.isArray(data.items)) {
+    data.items.forEach((item, index) => {
+      if (item.notes && item.notes.trim() !== "") {
+        allNotes.push(`${item.name || `المنتج ${index + 1}`}: ${item.notes}`);
+      }
+    });
+  }
+
+  // عرض الملاحظات
+  if (allNotes.length > 0) {
+    orderNotes.textContent = allNotes.join('\n\n');
+  } else {
+    orderNotes.textContent = "لا توجد ملاحظات";
+  }
 
   // سيتم إعداد أحداث النقر للأزرار في دالة renderActionButtons
 
