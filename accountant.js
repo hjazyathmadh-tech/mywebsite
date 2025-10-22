@@ -150,8 +150,27 @@ async function openModal(id, data) {
 
   // تعبئة معلومات العميل
   document.getElementById("modal-customer-name").textContent = data.customerName || "-";
-  document.getElementById("modal-customer-phone").textContent = data.phone || "-";
-  document.getElementById("modal-customer-address").textContent = data.address || "-";
+  document.getElementById("modal-customer-phone").textContent = data.customerPhone || "-";
+  document.getElementById("modal-customer-address").textContent = data.customerAddress || "-";
+  
+  // تعبئة طريقة الدفع
+  let paymentMethod = "-";
+  if (data.paymentMethod) {
+    switch (data.paymentMethod) {
+      case "cash":
+        paymentMethod = "دفع كاش";
+        break;
+      case "card":
+        paymentMethod = "دفع بالبطاقة";
+        break;
+      case "online":
+        paymentMethod = "دفع عبر الإنترنت";
+        break;
+      default:
+        paymentMethod = data.paymentMethod;
+    }
+  }
+  document.getElementById("modal-payment-method").textContent = paymentMethod;
 
   // تعبئة معلومات الطلب
   document.getElementById("modal-order-id").textContent = "#" + id;

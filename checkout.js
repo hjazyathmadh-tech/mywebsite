@@ -550,6 +550,21 @@ function initMap() {
 
 // Process order
 async function processOrder() {
+    // Get selected payment method
+    const selectedPaymentMethod = document.querySelector(".payment-option.active").getAttribute("data-method");
+
+    // If PayPal is selected, let the payment.js handle the process
+    if (selectedPaymentMethod === "paypal") {
+        showNotification("يرجى إكمال عملية الدفع عبر PayPal أولاً", "error");
+        return;
+    }
+
+    // For cash or card payment, process the order with payment status as pending
+    processOrderWithPayment(selectedPaymentMethod, "Pending");
+}
+
+// Process order with payment
+async function processOrderWithPayment(paymentMethod, paymentStatus, transactionId = null) {
     // Validate form
     if (!customerName.value.trim()) {
         showNotification("يرجى إدخال الاسم الكامل", "error");
@@ -593,7 +608,14 @@ async function processOrder() {
             items: cart,
             total: total,
             createdAt: serverTimestamp(),
+            paymentMethod: paymentMethod,
+            paymentStatus: paymentStatus
         };
+
+        // Add transaction ID if available
+        if (transactionId) {
+            orderData.transactionId = transactionId;
+        }
 
         // Add address if delivery is selected
         if (selectedDeliveryOption === "delivery") {
@@ -622,7 +644,7 @@ async function processOrder() {
         const docRef = await addDoc(collection(db, "orders"), orderData);
 
         // Show success message
-        showNotification("تم إرسال الطلب بنجاح! سيتم التواصل معك قريباً.", "success");
+        showNotification("تم اختيار وسيلة الدفع بنجاح وجاري إرسال الطلب", "success");
 
         // Clear cart and redirect
         localStorage.removeItem("cart");
