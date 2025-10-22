@@ -68,13 +68,365 @@ const menuItemsData = [
         { id: "spicy", name: "فلفل حار", price: 1, checked: false },
       ],
     },
+    {
+      id: 2,
+      name: "شاورما ساندوتش",
+      price: 7,
+      description: "شاورما ساندوتش بالدجاج أو اللحم مع الخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "shawarma",
+      baseIngredients: [
+        { id: "meat", name: "دجاج أو لحم", checked: true },
+        { id: "bread", name: "خبز", checked: true },
+        { id: "vegetables", name: "خضروات طازجة", checked: true },
+      ],
+      sauces: [
+        { id: "garlic", name: "صلصة الثوم", checked: false },
+        { id: "hummus", name: "صلصة الحمص", checked: false },
+      ],
+      extras: [
+        { id: "cheese", name: "جبن", price: 2, checked: false },
+        { id: "spicy", name: "فلفل حار", price: 1, checked: false },
+      ],
+    },
+    {
+      id: 3,
+      name: "شاورما صاج",
+      price: 8,
+      description: "شاورما صاج بالدجاج أو اللحم مع الخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "shawarma",
+      baseIngredients: [
+        { id: "meat", name: "دجاج أو لحم", checked: true },
+        { id: "bread", name: "خبز", checked: true },
+        { id: "vegetables", name: "خضروات طازجة", checked: true },
+      ],
+      sauces: [
+        { id: "garlic", name: "صلصة الثوم", checked: false },
+        { id: "hummus", name: "صلصة الحمص", checked: false },
+      ],
+      extras: [
+        { id: "cheese", name: "جبن", price: 2, checked: false },
+        { id: "spicy", name: "فلفل حار", price: 1, checked: false },
+      ],
+    },
+    {
+      id: 4,
+      name: "شاورما سوبريم",
+      price: 11,
+      description: "شاورما سوبريم بالدجاج أو اللحم مع الخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "shawarma",
+      baseIngredients: [
+        { id: "meat", name: "دجاج أو لحم", checked: true },
+        { id: "bread", name: "خبز", checked: true },
+        { id: "vegetables", name: "خضروات طازجة", checked: true },
+      ],
+      sauces: [
+        { id: "garlic", name: "صلصة الثوم", checked: false },
+        { id: "hummus", name: "صلصة الحمص", checked: false },
+      ],
+      extras: [
+        { id: "cheese", name: "جبن", price: 2, checked: false },
+        { id: "spicy", name: "فلفل حار", price: 1, checked: false },
+      ],
+    },
+    {
+      id: 5,
+      name: "شاورما سوبر",
+      price: 11,
+      description: "شاورما سوبر بالدجاج أو اللحم مع الخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "shawarma",
+      baseIngredients: [
+        { id: "meat", name: "دجاج أو لحم", checked: true },
+        { id: "bread", name: "خبز", checked: true },
+        { id: "vegetables", name: "خضروات طازجة", checked: true },
+      ],
+      sauces: [
+        { id: "garlic", name: "صلصة الثوم", checked: false },
+        { id: "hummus", name: "صلصة الحمص", checked: false },
+      ],
+      extras: [
+        { id: "cheese", name: "جبن", price: 2, checked: false },
+        { id: "spicy", name: "فلفل حار", price: 1, checked: false },
+      ],
+    },
+    {
+      id: 6,
+      name: "شاورما حراق",
+      price: 11,
+      description: "شاورما حراق بالدجاج أو اللحم مع الخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "shawarma",
+      baseIngredients: [
+        { id: "meat", name: "دجاج أو لحم", checked: true },
+        { id: "bread", name: "خبز", checked: true },
+        { id: "vegetables", name: "خضروات طازجة", checked: true },
+      ],
+      sauces: [
+        { id: "garlic", name: "صلصة الثوم", checked: false },
+        { id: "hummus", name: "صلصة الحمص", checked: false },
+      ],
+      extras: [
+        { id: "cheese", name: "جبن", price: 2, checked: false },
+        { id: "spicy", name: "فلفل حار", price: 1, checked: false },
+      ],
+    },
+    {
+      id: 7,
+      name: "شاورما حراق دجاج",
+      price: 11,
+      description: "شاورما حراق دجاج مع الخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "shawarma",
+      baseIngredients: [
+        { id: "meat", name: "دجاج", checked: true },
+        { id: "bread", name: "خبز", checked: true },
+        { id: "vegetables", name: "خضروات طازجة", checked: true },
+      ],
+      sauces: [
+        { id: "garlic", name: "صلصة الثوم", checked: false },
+        { id: "hummus", name: "صلصة الحمص", checked: false },
+      ],
+      extras: [
+        { id: "cheese", name: "جبن", price: 2, checked: false },
+        { id: "spicy", name: "فلفل حار", price: 1, checked: false },
+      ],
+    },
+    {
+      id: 8,
+      name: "شاورما مشكل",
+      price: 15,
+      description: "شاورما مشكل بالدجاج واللحم مع الخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "shawarma",
+      baseIngredients: [
+        { id: "meat", name: "دجاج ولحم", checked: true },
+        { id: "bread", name: "خبز", checked: true },
+        { id: "vegetables", name: "خضروات طازجة", checked: true },
+      ],
+      sauces: [
+        { id: "garlic", name: "صلصة الثوم", checked: false },
+        { id: "hummus", name: "صلصة الحمص", checked: false },
+      ],
+      extras: [
+        { id: "cheese", name: "جبن", price: 2, checked: false },
+        { id: "spicy", name: "فلفل حار", price: 1, checked: false },
+      ],
+    },
+    {
+      id: 9,
+      name: "شاورما عربي وسط",
+      price: 16,
+      description: "شاورما عربي وسط بالدجاج أو اللحم مع الخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "shawarma",
+      baseIngredients: [
+        { id: "meat", name: "دجاج أو لحم", checked: true },
+        { id: "bread", name: "خبز عربي", checked: true },
+        { id: "vegetables", name: "خضروات طازجة", checked: true },
+      ],
+      sauces: [
+        { id: "garlic", name: "صلصة الثوم", checked: false },
+        { id: "hummus", name: "صلصة الحمص", checked: false },
+      ],
+      extras: [
+        { id: "cheese", name: "جبن", price: 2, checked: false },
+        { id: "spicy", name: "فلفل حار", price: 1, checked: false },
+      ],
+    },
+    {
+      id: 10,
+      name: "شاورما عربي كبير",
+      price: 20,
+      description: "شاورما عربي كبير بالدجاج أو اللحم مع الخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "shawarma",
+      baseIngredients: [
+        { id: "meat", name: "دجاج أو لحم", checked: true },
+        { id: "bread", name: "خبز عربي", checked: true },
+        { id: "vegetables", name: "خضروات طازجة", checked: true },
+      ],
+      sauces: [
+        { id: "garlic", name: "صلصة الثوم", checked: false },
+        { id: "hummus", name: "صلصة الحمص", checked: false },
+      ],
+      extras: [
+        { id: "cheese", name: "جبن", price: 2, checked: false },
+        { id: "spicy", name: "فلفل حار", price: 1, checked: false },
+      ],
+    },
+    {
+      id: 11,
+      name: "شاورما عربي سبشل",
+      price: 17,
+      description: "شاورما عربي سبشل بالدجاج أو اللحم مع الخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "shawarma",
+      baseIngredients: [
+        { id: "meat", name: "دجاج أو لحم", checked: true },
+        { id: "bread", name: "خبز عربي", checked: true },
+        { id: "vegetables", name: "خضروات طازجة", checked: true },
+      ],
+      sauces: [
+        { id: "garlic", name: "صلصة الثوم", checked: false },
+        { id: "hummus", name: "صلصة الحمص", checked: false },
+      ],
+      extras: [
+        { id: "cheese", name: "جبن", price: 2, checked: false },
+        { id: "spicy", name: "فلفل حار", price: 1, checked: false },
+      ],
+    },
+    {
+      id: 12,
+      name: "شاورما عربي حراق",
+      price: 18,
+      description: "شاورما عربي حراق بالدجاج أو اللحم مع الخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "shawarma",
+      baseIngredients: [
+        { id: "meat", name: "دجاج أو لحم", checked: true },
+        { id: "bread", name: "خبز عربي", checked: true },
+        { id: "vegetables", name: "خضروات طازجة", checked: true },
+      ],
+      sauces: [
+        { id: "garlic", name: "صلصة الثوم", checked: false },
+        { id: "hummus", name: "صلصة الحمص", checked: false },
+      ],
+      extras: [
+        { id: "cheese", name: "جبن", price: 2, checked: false },
+        { id: "spicy", name: "فلفل حار", price: 1, checked: false },
+      ],
+    },
+    {
+      id: 13,
+      name: "شاورما عادي",
+      price: 15,
+      description: "شاورما عادي بالدجاج أو اللحم مع الخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "shawarma",
+      baseIngredients: [
+        { id: "meat", name: "دجاج أو لحم", checked: true },
+        { id: "bread", name: "خبز", checked: true },
+        { id: "vegetables", name: "خضروات طازجة", checked: true },
+      ],
+      sauces: [
+        { id: "garlic", name: "صلصة الثوم", checked: false },
+        { id: "hummus", name: "صلصة الحمص", checked: false },
+      ],
+      extras: [
+        { id: "cheese", name: "جبن", price: 2, checked: false },
+        { id: "spicy", name: "فلفل حار", price: 1, checked: false },
+      ],
+    },
+    {
+      id: 14,
+      name: "شاورما جامبو",
+      price: 19,
+      description: "شاورما جامبو بالدجاج أو اللحم مع الخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "shawarma",
+      baseIngredients: [
+        { id: "meat", name: "دجاج أو لحم", checked: true },
+        { id: "bread", name: "خبز", checked: true },
+        { id: "vegetables", name: "خضروات طازجة", checked: true },
+      ],
+      sauces: [
+        { id: "garlic", name: "صلصة الثوم", checked: false },
+        { id: "hummus", name: "صلصة الحمص", checked: false },
+      ],
+      extras: [
+        { id: "cheese", name: "جبن", price: 2, checked: false },
+        { id: "spicy", name: "فلفل حار", price: 1, checked: false },
+      ],
+    },
+    {
+      id: 15,
+      name: "شاورما اسبشل",
+      price: 20,
+      description: "شاورما اسبشل بالدجاج أو اللحم مع الخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "shawarma",
+      baseIngredients: [
+        { id: "meat", name: "دجاج أو لحم", checked: true },
+        { id: "bread", name: "خبز", checked: true },
+        { id: "vegetables", name: "خضروات طازجة", checked: true },
+      ],
+      sauces: [
+        { id: "garlic", name: "صلصة الثوم", checked: false },
+        { id: "hummus", name: "صلصة الحمص", checked: false },
+      ],
+      extras: [
+        { id: "cheese", name: "جبن", price: 2, checked: false },
+        { id: "spicy", name: "فلفل حار", price: 1, checked: false },
+      ],
+    },
+    {
+      id: 16,
+      name: "شاورما برجر",
+      price: 15,
+      description: "شاورما برجر بالدجاج أو اللحم مع الخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "shawarma",
+      baseIngredients: [
+        { id: "meat", name: "دجاج أو لحم", checked: true },
+        { id: "bread", name: "خبز برجر", checked: true },
+        { id: "vegetables", name: "خضروات طازجة", checked: true },
+      ],
+      sauces: [
+        { id: "garlic", name: "صلصة الثوم", checked: false },
+        { id: "hummus", name: "صلصة الحمص", checked: false },
+      ],
+      extras: [
+        { id: "cheese", name: "جبن", price: 2, checked: false },
+        { id: "spicy", name: "فلفل حار", price: 1, checked: false },
+      ],
+    },
+    {
+      id: 17,
+      name: "شاورما برجر جبن",
+      price: 17,
+      description: "شاورما برجر بالجبن والدجاج أو اللحم مع الخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "shawarma",
+      baseIngredients: [
+        { id: "meat", name: "دجاج أو لحم", checked: true },
+        { id: "bread", name: "خبز برجر", checked: true },
+        { id: "vegetables", name: "خضروات طازجة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+      ],
+      sauces: [
+        { id: "garlic", name: "صلصة الثوم", checked: false },
+        { id: "hummus", name: "صلصة الحمص", checked: false },
+      ],
+      extras: [
+        { id: "spicy", name: "فلفل حار", price: 1, checked: false },
+      ],
+    },
   
     // البيتزا
     {
       id: 10,
-      name: "بيتزا صغير",
+      name: "بيتزا اخطار",
       price: 11,
-      description: "بيتزا صغيرة بالجبن والخضروات",
+      description: "بيتزا اخطار صغيرة بالجبن والمكونات المميزة",
       image:
         "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
       category: "pizza",
@@ -85,17 +437,499 @@ const menuItemsData = [
       ],
       sauces: [],
       extras: [
-        { id: "vegetables", name: "خضروات", price: 2, checked: false },
-        { id: "meat", name: "لحم", price: 5, checked: false },
+        { id: "large", name: "حجم كبير", price: 5, checked: false },
+      ],
+    },
+    {
+      id: 11,
+      name: "بيتزا أمريكانا",
+      price: 11,
+      description: "بيتزا أمريكانا صغيرة بالجبن والمكونات المميزة",
+      image:
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "pizza",
+      baseIngredients: [
+        { id: "dough", name: "عجينة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "sauce", name: "صلصة طماطم", checked: true },
+      ],
+      sauces: [],
+      extras: [
+        { id: "large", name: "حجم كبير", price: 3, checked: false },
+      ],
+    },
+    {
+      id: 12,
+      name: "بيتزا خضار",
+      price: 11,
+      description: "بيتزا خضار صغيرة بالجبن والخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "pizza",
+      baseIngredients: [
+        { id: "dough", name: "عجينة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "vegetables", name: "خضروات متنوعة", checked: true },
+      ],
+      sauces: [],
+      extras: [
+        { id: "large", name: "حجم كبير", price: 3, checked: false },
+      ],
+    },
+    {
+      id: 13,
+      name: "بيتزا دجاج",
+      price: 13,
+      description: "بيتزا دجاج صغيرة بالجبن ودجاج",
+      image:
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "pizza",
+      baseIngredients: [
+        { id: "dough", name: "عجينة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "chicken", name: "دجاج", checked: true },
+      ],
+      sauces: [],
+      extras: [
+        { id: "large", name: "حجم كبير", price: 7, checked: false },
+      ],
+    },
+    {
+      id: 14,
+      name: "بيتزا تاكسي",
+      price: 13,
+      description: "بيتزا تاكسي صغيرة بالجبن والمكونات المميزة",
+      image:
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "pizza",
+      baseIngredients: [
+        { id: "dough", name: "عجينة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "sauce", name: "صلصة طماطم", checked: true },
+      ],
+      sauces: [],
+      extras: [
+        { id: "large", name: "حجم كبير", price: 7, checked: false },
+      ],
+    },
+    {
+      id: 15,
+      name: "بيتزا هوت دوق",
+      price: 13,
+      description: "بيتزا هوت دوق صغيرة بالجبن والمكونات المميزة",
+      image:
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "pizza",
+      baseIngredients: [
+        { id: "dough", name: "عجينة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "sauce", name: "صلصة طماطم", checked: true },
+      ],
+      sauces: [],
+      extras: [
+        { id: "large", name: "حجم كبير", price: 7, checked: false },
+      ],
+    },
+    {
+      id: 16,
+      name: "بيتزا شاورما",
+      price: 13,
+      description: "بيتزا شاورما صغيرة بالجبن وشاورما",
+      image:
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "pizza",
+      baseIngredients: [
+        { id: "dough", name: "عجينة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "shawarma", name: "شاورما", checked: true },
+      ],
+      sauces: [],
+      extras: [
+        { id: "large", name: "حجم كبير", price: 7, checked: false },
+      ],
+    },
+    {
+      id: 17,
+      name: "بيتزا مشكلة أحيانًا",
+      price: 13,
+      description: "بيتزا مشكلة أحيانًا صغيرة بالجبن والمكونات المميزة",
+      image:
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "pizza",
+      baseIngredients: [
+        { id: "dough", name: "عجينة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "sauce", name: "صلصة طماطم", checked: true },
+      ],
+      sauces: [],
+      extras: [
+        { id: "large", name: "حجم كبير", price: 7, checked: false },
+      ],
+    },
+    {
+      id: 18,
+      name: "بيتزا تونة",
+      price: 14,
+      description: "بيتزا تونة صغيرة بالجبن والتونة",
+      image:
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "pizza",
+      baseIngredients: [
+        { id: "dough", name: "عجينة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "tuna", name: "تونة", checked: true },
+      ],
+      sauces: [],
+      extras: [
+        { id: "large", name: "حجم كبير", price: 6, checked: false },
+      ],
+    },
+    {
+      id: 19,
+      name: "بيتزا نقانق",
+      price: 14,
+      description: "بيتزا نقانق صغيرة بالجبن والنقانق",
+      image:
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "pizza",
+      baseIngredients: [
+        { id: "dough", name: "عجينة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "sausage", name: "نقانق", checked: true },
+      ],
+      sauces: [],
+      extras: [
+        { id: "large", name: "حجم كبير", price: 6, checked: false },
+      ],
+    },
+    {
+      id: 20,
+      name: "بيتزا ديلايت",
+      price: 14,
+      description: "بيتزا ديلايت صغيرة بالجبن والمكونات المميزة",
+      image:
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "pizza",
+      baseIngredients: [
+        { id: "dough", name: "عجينة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "sauce", name: "صلصة طماطم", checked: true },
+      ],
+      sauces: [],
+      extras: [
+        { id: "large", name: "حجم كبير", price: 6, checked: false },
+      ],
+    },
+    {
+      id: 21,
+      name: "بيتزا دجاج",
+      price: 14,
+      description: "بيتزا دجاج صغيرة بالجبن ودجاج",
+      image:
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "pizza",
+      baseIngredients: [
+        { id: "dough", name: "عجينة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "chicken", name: "دجاج", checked: true },
+      ],
+      sauces: [],
+      extras: [
+        { id: "large", name: "حجم كبير", price: 6, checked: false },
+      ],
+    },
+    {
+      id: 22,
+      name: "بيتزا جبن",
+      price: 14,
+      description: "بيتزا جبن صغيرة بالجبن",
+      image:
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "pizza",
+      baseIngredients: [
+        { id: "dough", name: "عجينة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "sauce", name: "صلصة طماطم", checked: true },
+      ],
+      sauces: [],
+      extras: [
+        { id: "large", name: "حجم كبير", price: 6, checked: false },
+      ],
+    },
+    {
+      id: 23,
+      name: "بيتزا جمبري",
+      price: 14,
+      description: "بيتزا جمبري صغيرة بالجبن والجمبري",
+      image:
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "pizza",
+      baseIngredients: [
+        { id: "dough", name: "عجينة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "shrimp", name: "جمبري", checked: true },
+      ],
+      sauces: [],
+      extras: [
+        { id: "large", name: "حجم كبير", price: 9, checked: false },
+      ],
+    },
+    {
+      id: 24,
+      name: "بيتزا خضار",
+      price: 14,
+      description: "بيتزا خضار صغيرة بالجبن والخضروات الطازجة",
+      image:
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "pizza",
+      baseIngredients: [
+        { id: "dough", name: "عجينة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "vegetables", name: "خضروات متنوعة", checked: true },
+      ],
+      sauces: [],
+      extras: [
+        { id: "large", name: "حجم كبير", price: 9, checked: false },
+      ],
+    },
+    {
+      id: 25,
+      name: "بيتزا مشكل أحيانًا",
+      price: 13,
+      description: "بيتزا مشكل أحيانًا صغيرة بالجبن والمكونات المميزة",
+      image:
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "pizza",
+      baseIngredients: [
+        { id: "dough", name: "عجينة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "sauce", name: "صلصة طماطم", checked: true },
+      ],
+      sauces: [],
+      extras: [
+        { id: "large", name: "حجم كبير", price: 7, checked: false },
+      ],
+    },
+    {
+      id: 26,
+      name: "بيتزا ديلايت",
+      price: 23,
+      description: "بيتزا ديلايت كبيرة بالجبن والمكونات المميزة",
+      image:
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "pizza",
+      baseIngredients: [
+        { id: "dough", name: "عجينة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "sauce", name: "صلصة طماطم", checked: true },
+      ],
+      sauces: [],
+      extras: [
+        { id: "small", name: "حجم صغير", price: -9, checked: false },
+      ],
+    },
+    {
+      id: 27,
+      name: "بيتزا حجازيات",
+      price: 23,
+      description: "بيتزا حجازيات صغيرة بالجبن والمكونات المميزة",
+      image:
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "pizza",
+      baseIngredients: [
+        { id: "dough", name: "عجينة", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "sauce", name: "صلصة طماطم", checked: true },
+      ],
+      sauces: [],
+      extras: [
+        { id: "large", name: "حجم كبير", price: 2, checked: false },
       ],
     },
   
     // السندويتشات
     {
       id: 13,
-      name: "مشكيكي عادي",
+      name: "مكسيكي عادي",
       price: 11,
-      description: "مشكيكي عادي بالدجاج والخضروات",
+      description: "مكسيكي عادي بالدجاج والخضروات",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "sandwiches",
+      baseIngredients: [
+        { id: "meat", name: "دجاج", checked: true },
+        { id: "bread", name: "خبز", checked: true },
+        { id: "vegetables", name: "خضروات", checked: true },
+      ],
+      sauces: [{ id: "garlic", name: "صلصة الثوم", checked: false }],
+      extras: [{ id: "cheese", name: "جبن", price: 3, checked: false }],
+    },
+    {
+      id: 14,
+      name: "مكسيكي حراق",
+      price: 11,
+      description: "مكسيكي حراق بالدجاج والخضروات",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "sandwiches",
+      baseIngredients: [
+        { id: "meat", name: "دجاج", checked: true },
+        { id: "bread", name: "خبز", checked: true },
+        { id: "vegetables", name: "خضروات", checked: true },
+      ],
+      sauces: [{ id: "garlic", name: "صلصة الثوم", checked: false }],
+      extras: [{ id: "cheese", name: "جبن", price: 3, checked: false }],
+    },
+    {
+      id: 15,
+      name: "برجر دبل",
+      price: 7,
+      description: "برجر دبل باللحم والخضروات",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "sandwiches",
+      baseIngredients: [
+        { id: "meat", name: "لحم", checked: true },
+        { id: "bread", name: "خبز برجر", checked: true },
+        { id: "vegetables", name: "خضروات", checked: true },
+      ],
+      sauces: [{ id: "ketchup", name: "كاتشب", checked: false }],
+      extras: [{ id: "cheese", name: "جبن", price: 3, checked: false }],
+    },
+    {
+      id: 16,
+      name: "برجر لحم",
+      price: 7,
+      description: "برجر لحم بالخضروات",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "sandwiches",
+      baseIngredients: [
+        { id: "meat", name: "لحم", checked: true },
+        { id: "bread", name: "خبز برجر", checked: true },
+        { id: "vegetables", name: "خضروات", checked: true },
+      ],
+      sauces: [{ id: "ketchup", name: "كاتشب", checked: false }],
+      extras: [{ id: "cheese", name: "جبن", price: 3, checked: false }],
+    },
+    {
+      id: 17,
+      name: "برجر دجاج",
+      price: 7,
+      description: "برجر دجاج بالخضروات",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "sandwiches",
+      baseIngredients: [
+        { id: "chicken", name: "دجاج", checked: true },
+        { id: "bread", name: "خبز برجر", checked: true },
+        { id: "vegetables", name: "خضروات", checked: true },
+      ],
+      sauces: [{ id: "ketchup", name: "كاتشب", checked: false }],
+      extras: [{ id: "cheese", name: "جبن", price: 3, checked: false }],
+    },
+    {
+      id: 18,
+      name: "برجر جبن",
+      price: 7,
+      description: "برجر جبن بالخضروات",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "sandwiches",
+      baseIngredients: [
+        { id: "meat", name: "لحم", checked: true },
+        { id: "bread", name: "خبز برجر", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+        { id: "vegetables", name: "خضروات", checked: true },
+      ],
+      sauces: [{ id: "ketchup", name: "كاتشب", checked: false }],
+      extras: [],
+    },
+    {
+      id: 19,
+      name: "وجبة برجر",
+      price: 12,
+      description: "وجبة برجر مع بطاطس ومشروب",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "sandwiches",
+      baseIngredients: [
+        { id: "burger", name: "برجر", checked: true },
+        { id: "fries", name: "بطاطس", checked: true },
+        { id: "drink", name: "مشروب", checked: true },
+      ],
+      sauces: [{ id: "ketchup", name: "كاتشب", checked: false }],
+      extras: [{ id: "cheese", name: "جبن", price: 3, checked: false }],
+    },
+    {
+      id: 20,
+      name: "وجبة زنجر",
+      price: 15,
+      description: "وجبة زنجر مع بطاطس ومشروب",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "sandwiches",
+      baseIngredients: [
+        { id: "zinger", name: "زنجر", checked: true },
+        { id: "fries", name: "بطاطس", checked: true },
+        { id: "drink", name: "مشروب", checked: true },
+      ],
+      sauces: [{ id: "garlic", name: "صلصة الثوم", checked: false }],
+      extras: [{ id: "cheese", name: "جبن", price: 3, checked: false }],
+    },
+    {
+      id: 21,
+      name: "وجبة شاورما",
+      price: 15,
+      description: "وجبة شاورما مع بطاطس ومشروب",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "sandwiches",
+      baseIngredients: [
+        { id: "shawarma", name: "شاورما", checked: true },
+        { id: "fries", name: "بطاطس", checked: true },
+        { id: "drink", name: "مشروب", checked: true },
+      ],
+      sauces: [{ id: "garlic", name: "صلصة الثوم", checked: false }],
+      extras: [{ id: "cheese", name: "جبن", price: 3, checked: false }],
+    },
+    {
+      id: 22,
+      name: "وجبة عادي",
+      price: 11,
+      description: "وجبة عادية مع بطاطس ومشروب",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "sandwiches",
+      baseIngredients: [
+        { id: "sandwich", name: "ساندويتش", checked: true },
+        { id: "fries", name: "بطاطس", checked: true },
+        { id: "drink", name: "مشروب", checked: true },
+      ],
+      sauces: [{ id: "ketchup", name: "كاتشب", checked: false }],
+      extras: [{ id: "cheese", name: "جبن", price: 3, checked: false }],
+    },
+    {
+      id: 23,
+      name: "وجبة حراق",
+      price: 11,
+      description: "وجبة حراق مع بطاطس ومشروب",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "sandwiches",
+      baseIngredients: [
+        { id: "sandwich", name: "ساندويتش حراق", checked: true },
+        { id: "fries", name: "بطاطس", checked: true },
+        { id: "drink", name: "مشروب", checked: true },
+      ],
+      sauces: [{ id: "garlic", name: "صلصة الثوم", checked: false }],
+      extras: [{ id: "cheese", name: "جبن", price: 3, checked: false }],
+    },
+    {
+      id: 24,
+      name: "زنجر عادي",
+      price: 11,
+      description: "زنجر عادي بالدجاج والخضروات",
       image:
         "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
       category: "sandwiches",
@@ -107,10 +941,90 @@ const menuItemsData = [
       sauces: [{ id: "garlic", name: "صلصة الثوم", checked: false }],
       extras: [{ id: "cheese", name: "جبن", price: 3, checked: false }],
     },
+    {
+      id: 25,
+      name: "زنجر حراق",
+      price: 11,
+      description: "زنجر حراق بالدجاج والخضروات",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "sandwiches",
+      baseIngredients: [
+        { id: "chicken", name: "دجاج", checked: true },
+        { id: "bread", name: "خبز", checked: true },
+        { id: "vegetables", name: "خضروات", checked: true },
+      ],
+      sauces: [{ id: "garlic", name: "صلصة الثوم", checked: false }],
+      extras: [{ id: "cheese", name: "جبن", price: 3, checked: false }],
+    },
+    {
+      id: 26,
+      name: "وجبة زنجر دجاج",
+      price: 15,
+      description: "وجبة زنجر دجاج مع بطاطس ومشروب",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "sandwiches",
+      baseIngredients: [
+        { id: "zinger", name: "زنجر دجاج", checked: true },
+        { id: "fries", name: "بطاطس", checked: true },
+        { id: "drink", name: "مشروب", checked: true },
+      ],
+      sauces: [{ id: "garlic", name: "صلصة الثوم", checked: false }],
+      extras: [{ id: "cheese", name: "جبن", price: 3, checked: false }],
+    },
+    {
+      id: 27,
+      name: "وجبة زنجر حراق",
+      price: 15,
+      description: "وجبة زنجر حراق مع بطاطس ومشروب",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "sandwiches",
+      baseIngredients: [
+        { id: "zinger", name: "زنجر حراق", checked: true },
+        { id: "fries", name: "بطاطس", checked: true },
+        { id: "drink", name: "مشروب", checked: true },
+      ],
+      sauces: [{ id: "garlic", name: "صلصة الثوم", checked: false }],
+      extras: [{ id: "cheese", name: "جبن", price: 3, checked: false }],
+    },
+    {
+      id: 28,
+      name: "وجبة دجاج",
+      price: 13,
+      description: "وجبة دجاج مع بطاطس ومشروب",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "sandwiches",
+      baseIngredients: [
+        { id: "chicken", name: "دجاج", checked: true },
+        { id: "fries", name: "بطاطس", checked: true },
+        { id: "drink", name: "مشروب", checked: true },
+      ],
+      sauces: [{ id: "garlic", name: "صلصة الثوم", checked: false }],
+      extras: [{ id: "cheese", name: "جبن", price: 3, checked: false }],
+    },
+    {
+      id: 29,
+      name: "وجبة زهر",
+      price: 17,
+      description: "وجبة زهر مع بطاطس ومشروب",
+      image:
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "sandwiches",
+      baseIngredients: [
+        { id: "zahr", name: "زهر", checked: true },
+        { id: "fries", name: "بطاطس", checked: true },
+        { id: "drink", name: "مشروب", checked: true },
+      ],
+      sauces: [{ id: "garlic", name: "صلصة الثوم", checked: false }],
+      extras: [{ id: "cheese", name: "جبن", price: 3, checked: false }],
+    },
   
     // البروست
     {
-      id: 17,
+      id: 30,
       name: "بروست عادي",
       price: 18,
       description: "بروست دجاج مقرمش بالطريقة التقليدية",
@@ -127,10 +1041,28 @@ const menuItemsData = [
         { id: "coleslaw", name: "سلطة كولسلو", price: 3, checked: false },
       ],
     },
+    {
+      id: 31,
+      name: "بروست حراق",
+      price: 19,
+      description: "بروست دجاج حراق مقرمش بالتوابل الحارة",
+      image:
+        "https://images.unsplash.com/photo-1599940824468-a91f97c85eba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "broast",
+      baseIngredients: [{ id: "chicken", name: "دجاج مقرمش حار", checked: true }],
+      sauces: [
+        { id: "garlic", name: "صلصة الثوم", checked: false },
+        { id: "ketchup", name: "كاتشب", checked: false },
+      ],
+      extras: [
+        { id: "fries", name: "بطاطس", price: 3, checked: false },
+        { id: "coleslaw", name: "سلطة كولسلو", price: 3, checked: false },
+      ],
+    },
   
     // المقرمشات
     {
-      id: 19,
+      id: 32,
       name: "بطاطس مقلي صغير",
       price: 6,
       description: "بطاطس مقلية مقرمشة حجم صغير",
@@ -144,32 +1076,197 @@ const menuItemsData = [
       ],
       extras: [{ id: "cheese", name: "جبن", price: 2, checked: false }],
     },
-  
-    // الطباخي
     {
-      id: 26,
-      name: "سمبوسة",
+      id: 33,
+      name: "بطاطس وسط",
+      price: 7,
+      description: "بطاطس مقلية مقرمشة حجم وسط",
+      image:
+        "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "snacks",
+      baseIngredients: [{ id: "potatoes", name: "بطاطس", checked: true }],
+      sauces: [
+        { id: "ketchup", name: "كاتشب", checked: false },
+        { id: "mayo", name: "مايونيز", checked: false },
+      ],
+      extras: [{ id: "cheese", name: "جبن", price: 2, checked: false }],
+    },
+    {
+      id: 34,
+      name: "بطاطس كبير",
+      price: 8,
+      description: "بطاطس مقلية مقرمشة حجم كبير",
+      image:
+        "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "snacks",
+      baseIngredients: [{ id: "potatoes", name: "بطاطس", checked: true }],
+      sauces: [
+        { id: "ketchup", name: "كاتشب", checked: false },
+        { id: "mayo", name: "مايونيز", checked: false },
+      ],
+      extras: [{ id: "cheese", name: "جبن", price: 2, checked: false }],
+    },
+    {
+      id: 35,
+      name: "بطاطس جبن",
+      price: 8,
+      description: "بطاطس مقلية بالجبن",
+      image:
+        "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "snacks",
+      baseIngredients: [
+        { id: "potatoes", name: "بطاطس", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+      ],
+      sauces: [
+        { id: "ketchup", name: "كاتشب", checked: false },
+        { id: "mayo", name: "مايونيز", checked: false },
+      ],
+      extras: [],
+    },
+    {
+      id: 36,
+      name: "بطاطس زنجر",
+      price: 8,
+      description: "بطاطس مقلية مع قطع الدجاج المقلي",
+      image:
+        "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "snacks",
+      baseIngredients: [
+        { id: "potatoes", name: "بطاطس", checked: true },
+        { id: "chicken", name: "دجاج مقلي", checked: true },
+      ],
+      sauces: [
+        { id: "ketchup", name: "كاتشب", checked: false },
+        { id: "mayo", name: "مايونيز", checked: false },
+      ],
+      extras: [{ id: "cheese", name: "جبن", price: 2, checked: false }],
+    },
+    {
+      id: 37,
+      name: "بطاطس حجازيات",
+      price: 9,
+      description: "بطاطس حجازيات المميزة",
+      image:
+        "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "snacks",
+      baseIngredients: [
+        { id: "potatoes", name: "بطاطس", checked: true },
+        { id: "special_sauce", name: "صوص حجازيات خاص", checked: true },
+      ],
+      sauces: [
+        { id: "ketchup", name: "كاتشب", checked: false },
+        { id: "mayo", name: "مايونيز", checked: false },
+      ],
+      extras: [{ id: "cheese", name: "جبن", price: 2, checked: false }],
+    },
+    {
+      id: 38,
+      name: "دوم جبن",
+      price: 7,
+      description: "دوم جبن مقرمش",
+      image:
+        "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "snacks",
+      baseIngredients: [
+        { id: "bread", name: "خبز", checked: true },
+        { id: "cheese", name: "جبن", checked: true },
+      ],
+      sauces: [
+        { id: "ketchup", name: "كاتشب", checked: false },
+        { id: "mayo", name: "مايونيز", checked: false },
+      ],
+      extras: [],
+    },
+    {
+      id: 39,
+      name: "بطاطس فلافل",
+      price: 10,
+      description: "بطاطس مقلية مع قطع الفلافل",
+      image:
+        "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "snacks",
+      baseIngredients: [
+        { id: "potatoes", name: "بطاطس", checked: true },
+        { id: "falafel", name: "فلافل", checked: true },
+      ],
+      sauces: [
+        { id: "tahini", name: "طحينة", checked: false },
+        { id: "ketchup", name: "كاتشب", checked: false },
+      ],
+      extras: [{ id: "cheese", name: "جبن", price: 2, checked: false }],
+    },
+  
+    // المشروبات
+    {
+      id: 40,
+      name: "بيبسي",
       price: 2.5,
-      description: "سمبوسة محشية باللحم أو الخضار",
+      description: "مشروب بيبسي غازي منعش",
       image:
         "https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
       category: "cooked",
-      baseIngredients: [
-        { id: "pastry", name: "عجينة سمبوسة", checked: true },
-        { id: "filling", name: "حشوة لحم أو خضار", checked: true },
-      ],
-      sauces: [{ id: "chutney", name: "صلصة تشاتني", checked: false }],
-      extras: [],
+      baseIngredients: [{ id: "drink", name: "مشروب غازي", checked: true }],
+      sauces: [],
+      extras: [{ id: "ice", name: "ثلج", price: 0.5, checked: false }],
+    },
+    {
+      id: 41,
+      name: "ميرندا",
+      price: 2.5,
+      description: "مشروب ميرندا غازي منعش",
+      image:
+        "https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "cooked",
+      baseIngredients: [{ id: "drink", name: "مشروب غازي", checked: true }],
+      sauces: [],
+      extras: [{ id: "ice", name: "ثلج", price: 0.5, checked: false }],
+    },
+    {
+      id: 42,
+      name: "سفن",
+      price: 2.5,
+      description: "مشروب سفن غازي منعش",
+      image:
+        "https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "cooked",
+      baseIngredients: [{ id: "drink", name: "مشروب غازي", checked: true }],
+      sauces: [],
+      extras: [{ id: "ice", name: "ثلج", price: 0.5, checked: false }],
+    },
+    {
+      id: 43,
+      name: "ماي",
+      price: 0.5,
+      description: "مياه معدنية نقية",
+      image:
+        "https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "cooked",
+      baseIngredients: [{ id: "water", name: "مياه", checked: true }],
+      sauces: [],
+      extras: [{ id: "ice", name: "ثلج", price: 0.5, checked: false }],
+    },
+    {
+      id: 44,
+      name: "تانك",
+      price: 9,
+      description: "مشروب تانك غازي منعش بحجم كبير",
+      image:
+        "https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      category: "cooked",
+      baseIngredients: [{ id: "drink", name: "مشروب غازي كبير", checked: true }],
+      sauces: [],
+      extras: [{ id: "ice", name: "ثلج", price: 0.5, checked: false }],
     },
   ]
   
   const categories = {
-    shawarma: { name: "الشاورما", count: 9 },
-    pizza: { name: "البيتزا", count: 3 },
-    sandwiches: { name: "السندويتشات", count: 4 },
+    shawarma: { name: "الشاورما", count: 17 },
+    pizza: { name: "البيتزا", count: 18 },
+    sandwiches: { name: "السندويتشات", count: 18 },
     broast: { name: "البروست", count: 2 },
     snacks: { name: "المقرمشات", count: 8 },
-    cooked: { name: "الطباخي", count: 6 },
+    cooked: { name: "المشروبات", count: 5 },
   }
 
 // Initialize DOM elements
