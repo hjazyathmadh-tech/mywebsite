@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حسابي - مطعم الحجازيات</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom CSS for My Account Page */
+        .account-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-top: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 36px;
+            color: #e74c3c;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .account-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .account-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .account-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #f1f1f1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: 20px;
+            overflow: hidden;
+        }
+
+        .account-avatar i {
+            font-size: 36px;
+            color: #ccc;
+        }
+
+        .account-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .account-title h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .account-title p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #e74c3c;
+            outline: none;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 500;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: #f1f1f1;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e1e1e1;
+        }
+
+        .success-message,
+        .error-message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info-section {
+            margin-top: 30px;
+        }
+
+        .info-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .info-value-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-value {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .edit-btn {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn:hover {
+            background-color: #f8f8f8;
+            color: #c0392b;
+        }
+
+        /* Modal Styles */
+        .edit-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .edit-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .update-info-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .modal-content {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>شاورما <span>الحجازيات</span></h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">الرئيسية</a></li>
+                    <li><a href="index.html#menu">قائمة الطعام</a></li>
+                    <li><a href="my-orders.html">طلباتي</a></li>
+                    <li><a href="#" class="cart-btn"><i class="fas fa-shopping-cart"></i> السلة <span class="cart-count">0</span></a></li>
+                    <li id="user-menu-item" style="display: none;">
+                        <div class="user-menu">
+                            <span class="user-name"><i class="fas fa-user"></i> <span id="display-name">مستخدم</span></span>
+                            <div class="user-dropdown">
+                                <a href="#" id="my-account">حسابي</a>
+                                <a href="my-orders.html">طلباتي</a>
+                                <a href="#" id="logout-btn">تسجيل الخروج</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+            <div class="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+            <!-- Mobile Menu Sidebar -->
+            <div class="mobile-menu-sidebar">
+                <div class="mobile-menu-close">
+                    <i class="fas fa-times"></i>
+                </div>
+                <div class="mobile-menu-content">
+                    <!-- سيتم نسخ عناصر القائمة هنا عبر JavaScript -->
+                </div>
+            </div>
+            <!-- Mobile Menu Overlay -->
+            <div class="mobile-menu-overlay"></div>
+        </div>
+    </header>
+
+    <!-- My Account Content -->
+    <div class="account-container">
+        <div class="page-header">
+            <h1>حسابي</h1>
+            <p>إدارة معلوماتك الشخصية</p>
+        </div>
+
+        <div class="account-card">
+            <div class="success-message" id="success-message">
+                <i class="fas fa-check-circle"></i> تم تحديث معلوماتك بنجاح!
+            </div>
+
+            <div class="error-message" id="error-message">
+                <i class="fas fa-exclamation-circle"></i> حدث خطأ أثناء تحديث المعلومات. يرجى المحاولة مرة أخرى.
+            </div>
+
+            <div class="account-header">
+                <div class="account-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="account-title">
+                    <h2>معلوماتي الشخصية</h2>
+                    <p>عرض وتحديث بياناتك الشخصية</p>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <div class="info-item">
+                    <div class="info-label">الاسم الكامل</div>
+                    <div class="info-value-container">
+                        <div class="info-value" id="display-name-value">محمد أحمد</div>
+                        <button class="edit-btn" data-field="fullName"><i class="fas fa-pen"></i></button>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">البريد الإلكتروني</div>
+                    <div class="info-value-container">
+                        <div class="info-value" id="display-email-value">example@email.com</div>
+                        <button class="edit-btn" data-field="email"><i class="fas fa-pen"></i></button>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">رقم الهاتف</div>
+                    <div class="info-value-container">
+                        <div class="info-value" id="display-phone-value">0123456789</div>
+                        <button class="edit-btn" data-field="phone"><i class="fas fa-pen"></i></button>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">العمر</div>
+                    <div class="info-value-container">
+                        <div class="info-value" id="display-age-value">25</div>
+                        <button class="edit-btn" data-field="age"><i class="fas fa-pen"></i></button>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">الجنسية</div>
+                    <div class="info-value-container">
+                        <div class="info-value" id="display-gender-value">ذكر</div>
+                        <button class="edit-btn" data-field="gender"><i class="fas fa-pen"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Update Information Button -->
+            <div class="update-info-section">
+                <button class="btn btn-primary" id="update-info-btn">تحديث المعلومات</button>
+            </div>
+
+            <!-- Edit Modal -->
+            <div class="edit-modal" id="edit-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>تعديل المعلومات</h3>
+                        <button class="close-modal" id="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="edit-form">
+                            <div class="form-group">
+                                <label id="modal-label">القيمة</label>
+                                <input type="text" id="modal-input" required>
+                            </div>
+                            <div class="btn-container">
+                                <button type="button" class="btn btn-secondary" id="modal-cancel">إلغاء</button>
+                                <button type="submit" class="btn btn-primary">حفظ</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script type="module" src="firebase.js"></script>
+    <!-- My Account Script -->
+    <script type="module" src="my-account.js"></script>
+
+    <!-- Login Check Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userId = localStorage.getItem('userId');
+
+            if (!isLoggedIn || !userId) {
+                // Redirect to login page if not logged in
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html>

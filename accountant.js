@@ -88,9 +88,12 @@ function setupOrdersListener() {
         });
       }
 
+      // استخدام الرقم التسلسلي للطلب إذا كان موجودًا، وإلا استخدم المعرف
+      const orderIdDisplay = data.orderNumber ? `#${data.orderNumber}` : `#${docu.id}`;
+      
       orderCard.innerHTML = `
         <div class="order-header">
-          <div class="order-id">#${docu.id}</div>
+          <div class="order-id">${orderIdDisplay}</div>
           <div class="order-status status-${data.status}">${translateStatus(data.status)}</div>
         </div>
         <div class="order-customer">${data.customerName || "عميل غير معروف"}</div>
@@ -172,8 +175,9 @@ async function openModal(id, data) {
   }
   document.getElementById("modal-payment-method").textContent = paymentMethod;
 
-  // تعبئة معلومات الطلب
-  document.getElementById("modal-order-id").textContent = "#" + id;
+  // تعبئة معلومات الطلب - استخدام الرقم التسلسلي إذا كان موجودًا
+  const orderIdDisplay = data.orderNumber ? `#${data.orderNumber}` : `#${id}`;
+  document.getElementById("modal-order-id").textContent = orderIdDisplay;
   document.getElementById("modal-order-date").textContent = orderDate;
   document.getElementById("modal-order-status").textContent = translateStatus(data.status) || "-";
   document.getElementById("modal-order-total").textContent = (data.total || 0) + " ريال";
@@ -539,10 +543,13 @@ function setupReportsSearch() {
             minute: "2-digit"
           });
 
+          // استخدام الرقم التسلسلي للطلب إذا كان موجودًا
+          const orderIdDisplay = data.orderNumber ? `#${data.orderNumber}` : `#${doc.id}`;
+          
           // إنشاء صف جديد في الجدول
           const row = document.createElement("tr");
           row.innerHTML = `
-            <td>#${doc.id}</td>
+            <td>${orderIdDisplay}</td>
             <td>${data.customerName || "عميل غير معروف"}</td>
             <td><span class="order-status status-${data.status}">${translateStatus(data.status)}</span></td>
             <td>${formattedDate}</td>

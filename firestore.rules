@@ -1,51 +1,40 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
     // ========== Orders collection ==========
     match /orders/{orderId} {
       allow read: if request.auth != null && (
         request.auth.uid == resource.data.userId ||       // العميل يقرأ طلباته
-        resource.data.status == "pending" ||               // السائق يقرأ الطلبات الجديدة
-        resource.data.status == "accepted" ||              // السائق يقرأ الطلبات المقبولة
-        resource.data.status == "in_progress" ||           // السائق يقرأ الطلبات قيد التنفيذ
-        resource.data.status == "completed" ||             // السائق يقرأ الطلبات المكتملة
-        resource.data.driverId == request.auth.uid ||      // السائق يقرأ طلباته
-        request.auth.token.accountant == true              // المحاسب يقرأ الكل
+        resource.data.status == "pending" ||              // السائق يقرأ الطلبات الجديدة
+        resource.data.status == "accepted" ||             // السائق يقرأ الطلبات المقبولة
+        resource.data.driverId == request.auth.uid ||     // السائق يقرأ طلباته
+        request.auth.token.accountant == true             // المحاسب يقرأ الكل
       );
 
       // العميل ينشئ طلب
       allow create: if request.auth != null &&
         request.auth.uid == request.resource.data.userId;
 
-      // السائق يقدر يحدث حالة الطلب الخاص فيه
+      // السائق أو المحاسب يحدث حالة الطلب
       allow update: if request.auth != null && (
-        // قبول الطلب
-        (resource.data.status == "pending" &&
-         request.resource.data.status == "accepted" &&
-         request.resource.data.driverId == request.auth.uid) ||
-         // بدء التوصيل
-        (resource.data.driverId == request.auth.uid &&
-         resource.data.status == "accepted" &&
-         request.resource.data.status == "in_progress") ||
-         // إنهاء الطلب
-        (resource.data.driverId == request.auth.uid &&
-         resource.data.status == "in_progress" &&
-         request.resource.data.status == "completed") ||
-         // المحاسب يعدل الكل
+        (resource.data.status == "pending" || resource.data.status == "accepted") ||
+        (request.resource.data.status in ["ready", "accepted", "in_progress", "completed"]) ||
+        ("driverId" in request.resource.data && request.resource.data.driverId == request.auth.uid) ||
         request.auth.token.accountant == true
       );
 
-      // فقط المحاسب يحذف
+      // فقط المحاسب يحذف الطلب
       allow delete: if request.auth != null &&
         request.auth.token.accountant == true;
     }
 
     // ========== Users collection ==========
     match /users/{userId} {
-      allow read, update: if request.auth != null &&
+      allow create, read, update: if request.auth != null &&
         request.auth.uid == userId;
 
-      allow read, create, delete: if request.auth != null &&
+      allow read, delete: if request.auth != null &&
         request.auth.token.accountant == true;
     }
 
@@ -56,8 +45,15 @@ service cloud.firestore {
 
       allow read, create, delete: if request.auth != null &&
         request.auth.token.accountant == true;
-        
-      allow read: if request.auth != null;
+    }
+
+    // ========== Offers collection ==========
+    match /offers/{offerId} {
+      allow read: if true; // الكل يقدر يشوف العروض
+
+      // فقط المحاسب يقدر يعدل ويضيف ويحذف عروض
+      allow create, update, delete: if request.auth != null &&
+        request.auth.token.accountant == true;
     }
   }
 }

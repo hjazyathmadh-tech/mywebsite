@@ -695,23 +695,10 @@ nav ul li a.active {
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
 }
 
-.offer-card::before {
-  content: "عرض خاص";
-  position: absolute;
-  top: 20px;
-  left: -35px;
-  background-color: #e74c3c;
-  color: white;
-  padding: 5px 40px;
-  transform: rotate(-45deg);
-  font-weight: 500;
-  font-size: 14px;
-  z-index: 1;
-}
-
 .offer-img {
   height: 200px;
   overflow: hidden;
+  position: relative;
 }
 
 .offer-img img {
@@ -723,6 +710,19 @@ nav ul li a.active {
 
 .offer-card:hover .offer-img img {
   transform: scale(1.1);
+}
+
+.discount-badge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background-color: #e74c3c;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: 600;
+  font-size: 14px;
+  z-index: 1;
 }
 
 .offer-info {
@@ -739,7 +739,23 @@ nav ul li a.active {
 .offer-info p {
   font-size: 16px;
   color: #555;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
+}
+
+.offer-products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.offer-products span {
+  background-color: #f0f0f0;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #666;
 }
 
 .offer-price {
@@ -747,7 +763,7 @@ nav ul li a.active {
   justify-content: center;
   align-items: center;
   gap: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .offer-price .new-price {
@@ -760,6 +776,22 @@ nav ul li a.active {
   font-size: 18px;
   color: #999;
   text-decoration: line-through;
+}
+
+.offer-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.offer-quantity {
+  font-weight: 500;
+}
+
+.offer-end-date {
+  font-weight: 500;
 }
 
 /* Contact Section */

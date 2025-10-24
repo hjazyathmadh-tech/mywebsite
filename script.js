@@ -14,6 +14,9 @@ const navMenu = document.querySelector("nav ul")
 const navLinks = document.querySelectorAll("nav ul li a")
 const header = document.querySelector("header")
 
+// Offers Elements
+const offersContent = document.getElementById("offers-content")
+
 // Customize Order Elements
 let customizeModal
 let closeCustomize
@@ -1988,6 +1991,128 @@ function logoutUser() {
 }
 
 import { sendOrder } from "./firebase.js";
+import { collection, getDocs, getFirestore } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+// تحميل العروض من قاعدة البيانات
+async function loadOffers() {
+    try {
+        const db = getFirestore();
+        const querySnapshot = await getDocs(collection(db, "offers"));
+        
+        // مسح محتوى الحاوية
+        offersContent.innerHTML = "";
+        
+        // التحقق من وجود عروض
+        if (querySnapshot.empty) {
+            offersContent.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #666; grid-column: 1 / -1;">
+                    <i class="fas fa-tags" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                    <h3>لا توجد عروض حالياً</h3>
+                    <p>سيتم إضافة عروض قريباً</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // عرض العروض
+        querySnapshot.forEach((docSnap) => {
+            const offer = {
+                id: docSnap.id,
+                ...docSnap.data()
+            };
+            
+            // التحقق من انتهاء صلاحية العرض
+            const expiryDate = new Date(offer.expiryDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // عرض العرض فقط إذا لم ينتهي
+            if (expiryDate >= today) {
+                renderOfferCard(offer);
+            }
+        });
+    } catch (error) {
+        console.error("خطأ في تحميل العروض:", error);
+        offersContent.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #e74c3c;">
+                <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                <h3>حدث خطأ في تحميل العروض</h3>
+                <p>يرجى المحاولة مرة أخرى</p>
+            </div>
+        `;
+    }
+}
+
+// عرض بطاقة العرض
+function renderOfferCard(offer) {
+    const offerCard = document.createElement("div");
+    offerCard.className = "offer-card";
+    
+    // حساب النسبة المئوية للخصم
+    const discountPercentage = Math.round(((offer.oldPrice - offer.newPrice) / offer.oldPrice) * 100);
+    
+    // التحقق من الكمية
+    const quantityText = offer.quantity > 0 ? `الكمية: ${offer.quantity}` : "نفدت الكمية";
+    const isOutOfStock = offer.quantity <= 0;
+    
+    offerCard.innerHTML = `
+        <div class="offer-img">
+            <img src="${offer.imageUrl || 'https://via.placeholder.com/400x300'}" alt="${offer.title}">
+        </div>
+        <div class="offer-info">
+            <h3>${offer.title}</h3>
+            <p>${offer.description}</p>
+            <div class="offer-price">
+                <span class="old-price">${offer.oldPrice} ريال</span>
+                <span class="new-price">${offer.newPrice} ريال</span>
+            </div>
+            <button class="btn ${isOutOfStock ? 'disabled' : ''}" data-offer-id="${offer.id}" data-offer-title="${offer.title}" data-offer-price="${offer.newPrice}" ${isOutOfStock ? 'disabled' : ''}>
+                ${isOutOfStock ? 'نفدت الكمية' : 'اطلب العرض'}
+            </button>
+        </div>
+    `;
+    
+    // إضافة حدث النقر على زر الطلب
+    const orderBtn = offerCard.querySelector(".btn");
+    if (!isOutOfStock) {
+        orderBtn.addEventListener("click", function() {
+            // إضافة العرض إلى السلة
+            const offerId = this.getAttribute("data-offer-id");
+            const offerTitle = this.getAttribute("data-offer-title");
+            const offerPrice = parseFloat(this.getAttribute("data-offer-price"));
+            
+            // التحقق من وجود العرض في السلة
+            const existingItem = cart.find(item => item.id === offerId && item.type === "offer");
+            
+            if (existingItem) {
+                // إذا كان العرض موجوداً في السلة، زيادة الكمية
+                existingItem.quantity += 1;
+            } else {
+                // إضافة العرض إلى السلة
+                cart.push({
+                    id: offerId,
+                    name: offerTitle,
+                    price: offerPrice,
+                    quantity: 1,
+                    type: "offer"
+                });
+            }
+            
+            // تحديث السلة
+            updateCart();
+            
+            // فتح السلة
+            cartModal.style.display = "flex";
+        });
+    }
+    
+    offersContent.appendChild(offerCard);
+}
+
+// استدعاء دالة تحميل العروض عند تحميل الصفحة
+document.addEventListener("DOMContentLoaded", () => {
+    loadOffers();
+});
 
 document.querySelector(".checkout-btn").addEventListener("click", async () => {
     if (cart.length === 0) {

@@ -193,13 +193,28 @@ function renderOrderSummary() {
         const itemTotal = item.price * item.quantity;
         total += itemTotal;
 
+        // عرض تفاصيل العرض إذا كان العنصر من نوع عرض
+        let itemDetails = "";
+        if (item.type === "offer" && item.offerData) {
+            const products = item.offerData.products.map(p => `${p.name} (${p.quantity})`).join(", ");
+            itemDetails = `
+                <div class="order-item-details">
+                    <div class="offer-products">${products}</div>
+                    <div class="offer-price-details">
+                        <span class="old-price">${item.offerData.priceOld} ريال</span>
+                        <span class="new-price">${item.offerData.priceNew} ريال</span>
+                    </div>
+                </div>
+            `;
+        } else {
+            itemDetails = `<div class="order-item-details">${item.notes ? `ملاحظات: ${item.notes}` : ""}</div>`;
+        }
+
         orderItemsHTML += `
             <div class="order-item">
                 <div class="order-item-info">
                     <div class="order-item-name">${item.name} × ${item.quantity}</div>
-                    <div class="order-item-details">
-                        ${item.notes ? `ملاحظات: ${item.notes}` : ""}
-                    </div>
+                    ${itemDetails}
                 </div>
                 <div class="order-item-price">${itemTotal.toFixed(2)} ريال</div>
             </div>

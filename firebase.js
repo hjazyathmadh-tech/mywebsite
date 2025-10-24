@@ -112,6 +112,37 @@ export {
   getDownloadURL
 };
 
+// ===== دالة إنشاء رقم طلب تسلسلي =====
+import { runTransaction } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+export async function getNextOrderNumber() {
+  try {
+    const orderCounterRef = doc(db, "counters", "orderCounter");
+    
+    // استخدام معاملة لضمان عدم تكرار الأرقام
+    const newOrderNumber = await runTransaction(db, async (transaction) => {
+      const counterDoc = await transaction.get(orderCounterRef);
+      
+      // إذا لم يكن المستند موجودًا، قم بإنشائه
+      if (!counterDoc.exists()) {
+        transaction.set(orderCounterRef, { value: 1 });
+        return 1;
+      } else {
+        // إذا كان المستند موجودًا، قم بزيادة الرقم
+        const currentValue = counterDoc.data().value || 0;
+        const newValue = currentValue + 1;
+        transaction.update(orderCounterRef, { value: newValue });
+        return newValue;
+      }
+    });
+    
+    return newOrderNumber;
+  } catch (error) {
+    console.error("❌ خطأ في الحصول على رقم الطلب التسلسلي:", error);
+    throw error;
+  }
+}
+
 // ===== دالة إرسال الطلب =====
 export async function sendOrder(orderData) {
   const user = auth.currentUser;
@@ -121,6 +152,9 @@ export async function sendOrder(orderData) {
   }
 
   try {
+    // الحصول على رقم الطلب التسلسلي
+    const orderNumber = await getNextOrderNumber();
+    
     await addDoc(collection(db, "orders"), {
       userId: user.uid,
       customerName: orderData.customerName || "عميل غير معروف",
@@ -131,11 +165,12 @@ export async function sendOrder(orderData) {
       total: orderData.total || 0,
       status: "pending",
       notes: orderData.notes || "",
+      orderNumber: orderNumber, // إضافة رقم الطلب التسلسلي
       createdAt: serverTimestamp()
     });
 
     alert("✅ تم إرسال الطلب بنجاح");
-    return { success: true };
+    return { success: true, orderNumber };
   } catch (err) {
     console.error("❌ خطأ أثناء إرسال الطلب:", err);
     alert("حدث خطأ أثناء إرسال الطلب");

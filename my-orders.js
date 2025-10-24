@@ -7,6 +7,10 @@ const ordersContainer = document.getElementById("orders-container");
 const displayName = document.getElementById("display-name");
 const userMenuItem = document.getElementById("user-menu-item");
 const logoutBtn = document.getElementById("logout-btn");
+const navButtons = document.querySelectorAll(".nav-btn");
+
+// Current filter status (all by default)
+let currentFilter = "all";
 
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", () => {
@@ -20,6 +24,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (logoutBtn) {
         logoutBtn.addEventListener("click", logoutUser);
     }
+
+    // Setup my account button
+    const myAccountBtn = document.getElementById("my-account");
+    if (myAccountBtn) {
+        myAccountBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            window.location.href = "my-account.html";
+        });
+    }
+
+    // Setup navigation buttons
+    setupNavigationButtons();
 
     // Setup mobile menu
     setupMobileMenu();
@@ -66,11 +82,23 @@ function loadUserOrders() {
     }
 
     // Create a query to get orders for the current user
-    const ordersQuery = query(
-        collection(db, "orders"),
-        where("userId", "==", userId),
-        orderBy("createdAt", "desc")
-    );
+    let ordersQuery;
+
+    // If a specific status is selected (not "all"), add a where clause for status
+    if (currentFilter !== "all") {
+        ordersQuery = query(
+            collection(db, "orders"),
+            where("userId", "==", userId),
+            where("status", "==", currentFilter),
+            orderBy("createdAt", "desc")
+        );
+    } else {
+        ordersQuery = query(
+            collection(db, "orders"),
+            where("userId", "==", userId),
+            orderBy("createdAt", "desc")
+        );
+    }
 
     // Listen for real-time updates
     onSnapshot(ordersQuery, (querySnapshot) => {
@@ -175,9 +203,12 @@ function createOrderCard(order) {
     // Get status class and text
     const statusInfo = getOrderStatusInfo(order.status);
 
+    // استخدام الرقم التسلسلي للطلب إذا كان موجودًا
+    const orderNumberDisplay = order.orderNumber ? `#${order.orderNumber}` : `#${order.id.substring(0, 6)}`;
+    
     orderCard.innerHTML = `
         <div class="order-header">
-            <div class="order-number">طلب #${order.id.substring(0, 6)}</div>
+            <div class="order-number">طلب ${orderNumberDisplay}</div>
             <div class="order-status ${statusInfo.class}">${statusInfo.text}</div>
         </div>
         <div class="order-details">
@@ -204,11 +235,13 @@ function getOrderStatusInfo(status) {
     switch (status) {
         case "pending":
             return { class: "status-pending", text: "قيد الانتظار" };
-        case "قيد التحضير":
-            return { class: "status-preparing", text: "قيد التحضير" };
-        case "جاهز":
-            return { class: "status-ready", text: "جاهز" };
-        case "تم التوصيل":
+        case "accepted":
+            return { class: "status-accepted", text: "قيد التحضير" };
+        case "ready":
+            return { class: "status-ready", text: "جاهز للتوصيل" };
+        case "in_progress":
+            return { class: "status-in_progress", text: "قيد التنفيذ" };
+        case "delivered":
             return { class: "status-delivered", text: "تم التوصيل" };
         case "cancelled":
             return { class: "status-cancelled", text: "ملغي" };
@@ -228,6 +261,23 @@ function logoutUser() {
 
     // Redirect to login page
     window.location.href = "login.html";
+}
+
+// Setup navigation buttons
+function setupNavigationButtons() {
+    navButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            // Update active state
+            navButtons.forEach(btn => btn.classList.remove("active"));
+            button.classList.add("active");
+
+            // Update current filter
+            currentFilter = button.getAttribute("data-status");
+
+            // Reload orders with the new filter
+            loadUserOrders();
+        });
+    });
 }
 
 // Setup mobile menu

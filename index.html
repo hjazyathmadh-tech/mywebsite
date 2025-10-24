@@ -28,7 +28,7 @@
                         <div class="user-menu">
                             <span class="user-name"><i class="fas fa-user"></i> <span id="display-name">مستخدم</span></span>
                             <div class="user-dropdown">
-                                <a href="#" id="my-account">حسابي</a>
+                                <a href="my-account.html" id="my-account">حسابي</a>
                                 <a href="my-orders.html" id="my-orders">طلباتي</a>
                                 <a href="accountant-login.html" id="my-orders">دخول المحاسب</a>
                                 <a href="driver-login.html" id="my-orders">دخول السائق</a>
@@ -199,50 +199,11 @@
             <div class="section-title">
                 <h2>العروض <span>المميزة</span></h2>
             </div>
-            <div class="offers-content">
-                <div class="offer-card">
-                    <div class="offer-img">
-                        <img src="https://images.unsplash.com/photo-1603133872878-684f208fb84b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="عرض وجبة عائلية">
-                    </div>
-                    <div class="offer-info">
-                        <h3>وجبة عائلية</h3>
-                        <p>4 شاورما لحم + 4 شاورما دجاج + 2 مشروب + 2 مقبلات</p>
-                        <div class="offer-price">
-                            <span class="old-price">150 ريال</span>
-                            <span class="new-price">120 ريال</span>
-                        </div>
-                        <button class="btn">اطلب العرض</button>
-                    </div>
-                </div>
-
-                <div class="offer-card">
-                    <div class="offer-img">
-                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="عرض مشويات">
-                    </div>
-                    <div class="offer-info">
-                        <h3>وجبة المشويات</h3>
-                        <p>كباب + دجاج مشوي + أرز + سلطة + مشروب</p>
-                        <div class="offer-price">
-                            <span class="old-price">90 ريال</span>
-                            <span class="new-price">75 ريال</span>
-                        </div>
-                        <button class="btn">اطلب العرض</button>
-                    </div>
-                </div>
-
-                <div class="offer-card">
-                    <div class="offer-img">
-                        <img src="https://images.unsplash.com/photo-1594736797933-d0eb1ff2e2d6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="عرض نباتي">
-                    </div>
-                    <div class="offer-info">
-                        <h3>وجبة نباتية</h3>
-                        <p>6 فلافل + حمص + متبلات + خبز + مشروب</p>
-                        <div class="offer-price">
-                            <span class="old-price">50 ريال</span>
-                            <span class="new-price">40 ريال</span>
-                        </div>
-                        <button class="btn">اطلب العرض</button>
-                    </div>
+            <div class="offers-content" id="offers-content">
+                <!-- سيتم جلب العروض من قاعدة البيانات هنا -->
+                <div class="loading-offers" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #e74c3c;"></i>
+                    <p style="margin-top: 15px;">جاري تحميل العروض...</p>
                 </div>
             </div>
         </div>
@@ -515,5 +476,10 @@
             }
         });
     </script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <script src="config.js"></script>
+    <script type="module" src="offers.js"></script>
 </body>
 </html>
