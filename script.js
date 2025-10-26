@@ -2,7 +2,7 @@
 const menuFilterBtns = document.querySelectorAll(".filter-btn")
 const menuItems = document.querySelectorAll(".menu-item")
 const addToCartBtns = document.querySelectorAll(".add-to-cart")
-const cartBtn = document.querySelector(".cart-btn")
+const cartBtn = document.getElementById("cart-btn")
 const cartCount = document.querySelector(".cart-count")
 const cartModal = document.querySelector(".cart-modal")
 const closeCart = document.querySelector(".close-cart")
@@ -45,6 +45,24 @@ let currentItem = null
 
 // Cart array to store items
 let cart = []
+
+// Cart button event listener - Navigate to cart page
+document.getElementById("cart-btn").addEventListener("click", function (event) {
+  event.preventDefault();
+  // فتح صفحة السلة الجديدة في كل الأحجام
+  window.location.href = "cart.html";
+});
+
+// التأكد من أن معالج الأحداث يعمل على جميع الأحجام
+document.addEventListener('DOMContentLoaded', function() {
+  const cartBtns = document.querySelectorAll('.cart-btn');
+  cartBtns.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.location.href = "cart.html";
+    });
+  });
+});
 
 // Categories data
 const menuItemsData = [
@@ -1402,9 +1420,12 @@ document.addEventListener("DOMContentLoaded", () => {
           e.preventDefault();
           e.stopPropagation();
           
-          // Open cart modal
-          cartModal.style.display = "flex";
+          // Navigate to cart page
+          window.location.href = "cart.html";
           document.body.style.overflow = "hidden";
+          
+          // عرض محتويات السلة عند فتحها
+          renderCart();
           
           // Close mobile menu
           closeMobileMenu();
@@ -1493,21 +1514,22 @@ document.addEventListener("DOMContentLoaded", () => {
   })
 
   // Cart modal functionality
-  cartBtn.addEventListener("click", () => {
-    cartModal.style.display = "flex"
-    document.body.style.overflow = "hidden"
-  })
+  // cartBtn.addEventListener("click", () => {
+  //   cartModal.style.display = "flex"
+  //   document.body.style.overflow = "hidden"
+    
+  //   // عرض محتويات السلة عند فتحها
+  //   renderCart();
+  // })
 
   closeCart.addEventListener("click", () => {
-    cartModal.style.display = "none"
-    document.body.style.overflow = "auto"
+    window.location.href = "cart.html";
   })
 
   // Close cart when clicking outside
   cartModal.addEventListener("click", (e) => {
     if (e.target === cartModal) {
-      cartModal.style.display = "none"
-      document.body.style.overflow = "auto"
+      window.location.href = "cart.html";
     }
   })
 
@@ -2101,8 +2123,8 @@ function renderOfferCard(offer) {
             // تحديث السلة
             updateCart();
             
-            // فتح السلة
-            cartModal.style.display = "flex";
+            // توجيه إلى صفحة السلة
+            window.location.href = "cart.html";
         });
     }
     
@@ -2123,5 +2145,15 @@ document.querySelector(".checkout-btn").addEventListener("click", async () => {
     const cartItems = cart; // 🟢 مصفوفة المنتجات
     const total     = cart.reduce((sum, item) => sum + item.price * item.quantity, 0); // 🟢 مجموع السعر
 
-    await sendOrder(cartItems, total);
+    const result = await sendOrder(cartItems, total);
+    
+    // إذا تم إرسال الطلب بنجاح، قم بتفريغ السلة
+    if (result && result.success) {
+        cart = [];
+        updateCart();
+        renderCart();
+        
+        // توجيه إلى صفحة السلة
+        window.location.href = "cart.html";
+    }
 });

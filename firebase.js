@@ -1,3 +1,4 @@
+
 // firebase.js
 // ===== استيراد مكتبات Firebase =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
