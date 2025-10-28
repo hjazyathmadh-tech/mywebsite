@@ -1,5 +1,5 @@
 
-// firebase.js
+// zakarya.js
 // ===== استيراد مكتبات Firebase =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";

@@ -11,10 +11,10 @@ import {
   signOut,
   saveDriverInfo,
   loadDriverInfo
-} from "./firebase.js";
+} from "./zakarya.js";
 
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-import { app } from "./firebase.js";
+import { app } from "./zakarya.js";
 
 const auth = getAuth(app);
 let driverId = null;
@@ -777,7 +777,7 @@ async function updateOrderStatusInDB(orderId, newStatus) {
     return;
   }
 
-  // استخدام دالة updateOrderStatus من firebase.js
+  // استخدام دالة updateOrderStatus من zakarya.js
   try {
     if (newStatus === "accepted") {
       // إضافة بيانات السائق إلى الطلب عند قبوله

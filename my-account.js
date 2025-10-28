@@ -1,5 +1,5 @@
 // My Account Page JavaScript
-import { auth, db, onAuthStateChanged } from "./firebase.js";
+import { auth, db, onAuthStateChanged } from "./zakarya.js";
 import { doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
 // DOM Elements

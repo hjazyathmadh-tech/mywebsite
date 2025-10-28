@@ -1,5 +1,5 @@
 // Order Tracking Page JavaScript
-import { auth, db } from "./firebase.js";
+import { auth, db } from "./zakarya.js";
 // تم تعديل الاستيراد لإضافة getDoc لمعالجة خطأ Firebase
 import { doc, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 

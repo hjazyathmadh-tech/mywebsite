@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "zakarya.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}

@@ -1,5 +1,5 @@
 // استيراد Firebase
-import { db, collection, getDocs } from "./firebase.js";
+import { db, collection, getDocs } from "./zakarya.js";
 
 // تعريف متغيرات عامة
 let offersContent;

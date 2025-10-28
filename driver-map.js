@@ -5,7 +5,7 @@ import {
     updateDoc,
     onAuthStateChanged,
     auth
-} from "./firebase.js";
+} from "./zakarya.js";
 
 // DOM Elements
 const mapElement = document.getElementById("map");

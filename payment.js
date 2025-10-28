@@ -1,5 +1,5 @@
 // Payment Methods JavaScript
-import { auth, db } from "./firebase.js";
+import { auth, db } from "./zakarya.js";
 import { collection, addDoc, serverTimestamp, updateDoc, doc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
 // DOM Elements
