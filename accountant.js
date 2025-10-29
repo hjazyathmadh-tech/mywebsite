@@ -175,6 +175,37 @@ async function openModal(id, data) {
   }
   document.getElementById("modal-payment-method").textContent = paymentMethod;
 
+  // تعبئة طريقة الاستلام
+  let receiptMethod = "-";
+
+  // التحقق من وجود حقول deliveryMethod أو deliveryType (الحقول الفعلية في قاعدة البيانات)
+  if (data.deliveryMethod) {
+    switch (data.deliveryMethod) {
+      case "delivery":
+        receiptMethod = "توصيل للمنزل";
+        break;
+      case "pickup":
+        receiptMethod = "استلام من المطعم";
+        break;
+      default:
+        receiptMethod = data.deliveryMethod;
+    }
+  } else if (data.deliveryType) {
+    switch (data.deliveryType) {
+      case "delivery":
+        receiptMethod = "توصيل للمنزل";
+        break;
+      case "pickup":
+        receiptMethod = "استلام من المطعم";
+        break;
+      default:
+        receiptMethod = data.deliveryType;
+    }
+  }
+
+  document.getElementById("modal-receipt-method").textContent = receiptMethod;
+  console.log("طريقة الاستلام:", receiptMethod, "من حقل:", data.deliveryMethod || data.deliveryType || "غير محدد");
+
   // تعبئة معلومات الطلب - استخدام الرقم التسلسلي إذا كان موجودًا
   const orderIdDisplay = data.orderNumber ? `#${data.orderNumber}` : `#${id}`;
   document.getElementById("modal-order-id").textContent = orderIdDisplay;
