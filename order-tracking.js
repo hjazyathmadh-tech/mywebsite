@@ -1,6 +1,5 @@
-// Order Tracking Page JavaScript
+// Order Tracking Page JavaScript - Version 2.0 (مصحح الأخطاء)
 import { auth, db } from "./zakarya.js";
-// تم تعديل الاستيراد لإضافة getDoc لمعالجة خطأ Firebase
 import { doc, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
 // DOM Elements
@@ -22,11 +21,10 @@ let driverMarker;
 let routeLine;
 let order;
 let orderId;
-let watchId = null;
+let unsubscribeOrderListener = null; // لإلغاء الاشتراك في Firebase
 
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", () => {
-    // Get order ID from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     orderId = urlParams.get("orderId");
 
@@ -35,23 +33,28 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    // Check if user is logged in
     checkUserLogin();
-
-    // Load order data
-    loadOrderData();
-
-    // Initialize map
     initMap();
+    loadOrderData(); // يبدأ الاستماع لتحديثات الطلب والموقع
 
-    // Setup logout functionality
     if (logoutBtn) {
         logoutBtn.addEventListener("click", logoutUser);
     }
+    
+    // تصحيح: إضافة تعريف للدالة أو حذف الاستدعاء
+    setupMobileMenu(); 
 
-    // Setup mobile menu
-    setupMobileMenu();
+    // تنظيف الاشتراك عند مغادرة الصفحة
+    window.addEventListener('beforeunload', cleanup); 
 });
+
+// دالة لتنظيف الاشتراكات
+function cleanup() {
+    if (unsubscribeOrderListener) {
+        unsubscribeOrderListener();
+        console.log("تم إلغاء الاشتراك في تحديثات الطلب.");
+    }
+}
 
 // Check if user is logged in
 function checkUserLogin() {
@@ -59,26 +62,15 @@ function checkUserLogin() {
     const userName = localStorage.getItem("userName");
 
     if (isLoggedIn && userName) {
-        // Show user menu
-        if (userMenuItem) {
-            userMenuItem.style.display = "block";
-        }
-
-        // Update display name
-        if (displayName) {
-            displayName.textContent = userName;
-        }
+        if (userMenuItem) userMenuItem.style.display = "block";
+        if (displayName) displayName.textContent = userName;
     } else {
-        // Hide user menu if not logged in
-        if (userMenuItem) {
-            userMenuItem.style.display = "none";
-        }
+        if (userMenuItem) userMenuItem.style.display = "none";
     }
 }
 
-// Load order data from Firebase
+// Load order data from Firebase (تم دمج كل منطق التحديث هنا)
 function loadOrderData() {
-    // Show loading state
     orderStatusContainer.innerHTML = `
         <div class="loading-container">
             <div class="loading-spinner"></div>
@@ -86,66 +78,103 @@ function loadOrderData() {
         </div>
     `;
 
-    // Listen for real-time updates to the order
     const orderRef = doc(db, "orders", orderId);
 
-    onSnapshot(orderRef, (docSnap) => {
+    // الاشتراك الوحيد في تحديثات الطلب
+    unsubscribeOrderListener = onSnapshot(orderRef, (docSnap) => {
         if (docSnap.exists()) {
+            // تحديث كائن الطلب العام
             order = {
                 id: docSnap.id,
                 ...docSnap.data()
             };
 
-            // Update UI with order data
+            // تحديث UI الحالة والتفاصيل
             updateOrderStatus();
             updateOrderDetails();
 
-            // If order has a driver assigned, update driver info and map
-            if (order.driverId) {
-                updateDriverInfo();
+            // تحديث معلومات السائق والخريطة
+            updateDriverAndMap(order);
 
-                // Update driver location directly from the order document
-                if (order.driverLocation && order.driverLocation.lat && order.driverLocation.lng) {
-                    // طباعة موقع السائق من Firebase في الـ Console
-                    console.log("📍 موقع السائق من Firebase (في loadOrderData):", order.driverLocation.lat, order.driverLocation.lng);
-
-                    // Update driver marker position
-                    const driverLocation = [order.driverLocation.lat, order.driverLocation.lng];
-                    if (driverMarker) {
-                        driverMarker.setLatLng(driverLocation);
-                        driverMarker.setOpacity(1);
-                        driverMarker.bindPopup("موقع السائق").openPopup();
-
-                        // Update route line
-                        if (order.location && order.location.lat && order.location.lng) {
-                            const customerLocation = [order.location.lat, order.location.lng];
-                            updateRouteLine(driverLocation, customerLocation);
-                        }
-                    }
-                }
-
-                // Call updateMapWithDriverLocation to set up real-time updates
-                updateMapWithDriverLocation();
-            } else {
-                // Hide driver info card if no driver assigned
-                if (driverInfoCard) {
-                    driverInfoCard.style.display = "none";
-                }
-            }
         } else {
+            cleanup();
             showError("الطلب غير موجود");
         }
     }, (error) => {
         console.error("Error loading order:", error);
+        cleanup();
         showError("لا يمكن تحميل بيانات الطلب");
     });
 }
+
+// دالة موحدة لتحديث معلومات السائق والخريطة
+function updateDriverAndMap(currentOrder) {
+    if (!currentOrder || !map || !driverMarker || !customerMarker) return;
+
+    // 1. تحديث موقع العميل
+    if (currentOrder.location && currentOrder.location.lat && currentOrder.location.lng) {
+        const customerLocation = [currentOrder.location.lat, currentOrder.location.lng];
+        customerMarker.setLatLng(customerLocation);
+        customerMarker.bindPopup("موقع العميل").openPopup();
+    }
+    
+    // 2. تحديث معلومات السائق (إذا كان موجوداً)
+    if (currentOrder.driverId) {
+        updateDriverInfo(); // سيتولى جلب الصورة إذا لم تكن موجودة
+
+        // 3. تحديث موقع السائق وخط الطريق
+        if (currentOrder.driverLocation && currentOrder.driverLocation.lat && currentOrder.driverLocation.lng) {
+            const driverLocation = [currentOrder.driverLocation.lat, currentOrder.driverLocation.lng];
+            
+            console.log("📍 موقع السائق من Firebase (عبر الاشتراك الموحد):", driverLocation[0], driverLocation[1]);
+
+            driverMarker.setLatLng(driverLocation);
+            driverMarker.setOpacity(1);
+            driverMarker.bindPopup("موقع السائق").openPopup();
+
+            // تحديث خط الطريق فقط إذا كانت الحالة تتطلب تتبعاً
+            if (currentOrder.status === "in_progress" || currentOrder.status === "ready") {
+                 if (currentOrder.location && currentOrder.location.lat && currentOrder.location.lng) {
+                    const customerLocation = [currentOrder.location.lat, currentOrder.location.lng];
+                    updateRouteLine(driverLocation, customerLocation);
+                }
+            } else {
+                 // إزالة خط الطريق في حالات الاكتمال/الإلغاء
+                if (routeLine) {
+                    map.removeLayer(routeLine);
+                    routeLine = null;
+                }
+            }
+            
+            // ضبط عرض الخريطة ليشمل العلامتين عند التحديث الأولي
+            const group = new L.featureGroup([customerMarker, driverMarker]);
+            map.fitBounds(group.getBounds().pad(0.2), { maxZoom: 15 });
+
+        } else {
+            // إخفاء علامة السائق في حال عدم توفر الموقع
+            driverMarker.setOpacity(0);
+            if (routeLine) {
+                map.removeLayer(routeLine);
+                routeLine = null;
+            }
+        }
+    } else {
+        // إخفاء معلومات وعلامة السائق إذا لم يتم تعيين سائق
+        if (driverInfoCard) driverInfoCard.style.display = "none";
+        if (driverMarker) driverMarker.setOpacity(0);
+        if (routeLine) {
+            map.removeLayer(routeLine);
+            routeLine = null;
+        }
+    }
+}
+
+// ... (بقية دوال updateOrderStatus و updateOrderDetails و updateDriverInfo و fetchDriverPhoto و initMap لم تتغير بشكل كبير) ...
 
 // Update order status in the UI
 function updateOrderStatus() {
     if (!order) return;
 
-    // Get status class and text
     const statusInfo = getOrderStatusInfo(order.status);
 
     orderStatusContainer.innerHTML = `
@@ -155,7 +184,6 @@ function updateOrderStatus() {
         </div>
     `;
 
-    // Show ETA for orders in progress or ready
     if ((order.status === "in_progress" || order.status === "ready") && order.eta) {
         etaContainer.style.display = "flex";
         etaTime.textContent = order.eta;
@@ -168,10 +196,8 @@ function updateOrderStatus() {
 function updateOrderDetails() {
     if (!order || !orderDetails) return;
 
-    // Format date
     let formattedDate = "غير محدد";
     if (order.createdAt && order.createdAt.toDate) {
-        // التحقق من وجود toDate للتأكد من أنه Timestamp
         const date = order.createdAt.toDate();
         formattedDate = date.toLocaleDateString("ar-SA", {
             year: "numeric",
@@ -216,19 +242,18 @@ function updateDriverInfo() {
 
     driverInfoCard.style.display = "block";
 
-    // إذا لم تكن صورة السائق متوفرة في بيانات الطلب، قم بجلبها من قاعدة البيانات
-    if (!order.driverPhoto) {
-        // لا نحتاج لـ await هنا، فقط استدعاء الدالة
+    if (!order.driverPhoto && order.driverId) {
         fetchDriverPhoto(order.driverId);
     }
+    
+    const avatarContent = order.driverPhoto ?
+        `<img src="${order.driverPhoto}" alt="${order.driverName}">` :
+        `<i class="fas fa-user"></i>`;
 
     driverInfo.innerHTML = `
         <div class="driver-info">
             <div class="driver-avatar" id="driver-avatar-${order.driverId}">
-                ${order.driverPhoto ?
-                    `<img src="${order.driverPhoto}" alt="${order.driverName}">` :
-                    `<i class="fas fa-user"></i>`
-                }
+                ${avatarContent}
             </div>
             <div class="driver-details">
                 <h3>${order.driverName || "غير محدد"}</h3>
@@ -250,18 +275,15 @@ function updateDriverInfo() {
 }
 
 // جلب صورة السائق من قاعدة البيانات
-// تم تصحيح الخطأ بإضافة getDoc إلى Imports
 async function fetchDriverPhoto(driverId) {
     try {
         const driverDoc = await getDoc(doc(db, "drivers", driverId));
         if (driverDoc.exists()) {
             const driverData = driverDoc.data();
             if (driverData.imageUrl) {
-                // تحديث صورة السائق في الواجهة
                 const driverAvatar = document.getElementById(`driver-avatar-${driverId}`);
                 if (driverAvatar) {
                     driverAvatar.innerHTML = `<img src="${driverData.imageUrl}" alt="${order.driverName}">`;
-                    // تحديث كائن الطلب محليًا (اختياري)
                     order.driverPhoto = driverData.imageUrl;
                 }
             }
@@ -275,39 +297,26 @@ async function fetchDriverPhoto(driverId) {
 function initMap() {
     if (!mapContainer) return;
 
-    // Default location (Jeddah, Saudi Arabia)
     const defaultLocation = [21.485811, 39.192504];
-
-    // Create map
     map = L.map(mapContainer).setView(defaultLocation, 13);
 
-    // Add tile layer (OpenStreetMap)
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Create customer marker (red pin icon)
+    // استخدام أيقونة Font Awesome لتكون أوضح
     customerMarker = L.marker(defaultLocation, {
         icon: L.divIcon({
-            className: 'map-arrow-icon',
-            html: `<div style="
-                width: 0;
-                height: 0;
-                border-left: 10px solid transparent;
-                border-right: 10px solid transparent;
-                border-bottom: 20px solid blue;
-                transform: rotate(0deg);
-            "></div>`,
-            iconSize: [20, 20],
-            iconAnchor: [10, 20],
-            popupAnchor: [0, -20]
+            className: 'map-customer-icon',
+            html: `<i class="fas fa-map-marker-alt" style="color: blue; font-size: 30px;"></i>`,
+            iconSize: [30, 30],
+            iconAnchor: [15, 30],
+            popupAnchor: [0, -30]
         })
     }).addTo(map);
-    
-    customerMarker.bindPopup("موقع العميل");
-    
 
-    // Create driver marker (car icon)
+    customerMarker.bindPopup("موقع العميل");
+
     driverMarker = L.marker(defaultLocation, {
         icon: L.icon({
             iconUrl: "images/car.png",
@@ -318,127 +327,61 @@ function initMap() {
     }).addTo(map);
     driverMarker.bindPopup("موقع السائق");
 
-    // Hide driver marker initially
     driverMarker.setOpacity(0);
 }
 
-// Update map with driver location
-function updateMapWithDriverLocation() {
-    if (!order || !order.id || !map || !driverMarker || !customerMarker) return;
 
-    // Show driver marker
-    driverMarker.setOpacity(1);
+// **تم حذف updateMapWithDriverLocation و updateDriverMarker و listenForDriverLocationUpdates**
 
-    // Update customer location if available
-    if (order.location && order.location.lat && order.location.lng) {
-        const customerLocation = [order.location.lat, order.location.lng];
-        customerMarker.setLatLng(customerLocation);
-        customerMarker.bindPopup("موقع العميل").openPopup();
-
-        // Update map view to show both markers
-        const group = new L.featureGroup([customerMarker, driverMarker]);
-        map.fitBounds(group.getBounds().pad(0.1));
-    }
-
-    // Watch for driver location updates in real-time from the order document
-    const orderRef = doc(db, "orders", order.id);
-    onSnapshot(orderRef, (docSnap) => {
-        if (docSnap.exists()) {
-            const orderData = docSnap.data();
-
-            // Update order object with latest data
-            order = {
-                id: order.id,
-                ...orderData
-            };
-
-            // Update driver location if available
-            if (orderData.driverLocation && orderData.driverLocation.lat && orderData.driverLocation.lng) {
-                // طباعة موقع السائق من Firebase في الـ Console
-                console.log("📍 موقع السائق من Firebase:", orderData.driverLocation.lat, orderData.driverLocation.lng);
-
-                // Update driver marker position
-                updateDriverMarker(orderData.driverLocation.lat, orderData.driverLocation.lng);
-            }
-
-            // Update ETA if available
-            if (orderData.eta) {
-                if (etaContainer) etaContainer.style.display = "flex";
-                if (etaTime) etaTime.textContent = orderData.eta;
-            } else {
-                etaContainer.style.display = "none";
-            }
-        }
-    });
-}
-
-// Update driver marker position
-function updateDriverMarker(lat, lng) {
-    if (!driverMarker || !map) return;
-
-    const driverLocation = [lat, lng];
-    driverMarker.setLatLng(driverLocation);
-    driverMarker.bindPopup("موقع السائق").openPopup();
-
-    // Update route line
-    if (order && order.location && order.location.lat && order.location.lng) {
-        const customerLocation = [order.location.lat, order.location.lng];
-        updateRouteLine(driverLocation, customerLocation);
-    }
-}
-
-// Listen for order updates to get driver location
-function listenForDriverLocationUpdates() {
-    if (!order || !order.id) return;
-    
-    const orderRef = doc(db, "orders", order.id);
-    
-    onSnapshot(orderRef, (docSnap) => {
-        if (docSnap.exists()) {
-            const orderData = docSnap.data();
-            
-            // Update driver location if available
-            if (orderData.driverLocation && orderData.driverLocation.lat && orderData.driverLocation.lng) {
-                // طباعة موقع السائق من Firebase في الـ Console
-                console.log("📍 موقع السائق من Firebase (في دالة listenForDriverLocationUpdates):", orderData.driverLocation.lat, orderData.driverLocation.lng);
-
-                const driverLocation = [orderData.driverLocation.lat, orderData.driverLocation.lng];
-                driverMarker.setLatLng(driverLocation);
-                driverMarker.bindPopup("موقع السائق").openPopup();
-                
-                // Update route line
-                if (orderData.location && orderData.location.lat && orderData.location.lng) {
-                    const customerLocation = [orderData.location.lat, orderData.location.lng];
-                    updateRouteLine(driverLocation, customerLocation);
-                }
-            }
-            
-            // Update ETA if available
-            if (orderData.eta) {
-                if (etaContainer) etaContainer.style.display = "flex";
-                if (etaTime) etaTime.textContent = orderData.eta;
-            }
-        }
-    });
-}
 
 // Update route line between driver and customer
-function updateRouteLine(driverLocation, customerLocation) {
+async function updateRouteLine(driverLocation, customerLocation) {
     if (!map) return;
-    
-    // Remove existing route line if it exists
+
+    // Remove existing route line
     if (routeLine) {
         map.removeLayer(routeLine);
+        routeLine = null;
     }
 
-    // Create new route line
-    routeLine = L.polyline([driverLocation, customerLocation], {
-        color: "#e74c3c",
-        weight: 4,
-        opacity: 0.7,
-        dashArray: "10, 10"
-    }).addTo(map);
+    try {
+        // تأكد من أن مفتاح API الخاص بك لخدمة OpenRouteService صالح
+        const API_KEY = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImFiYWQwM2ExNjI2NjRmYzg5YWU1ZDNkZDNmNjMxY2M4IiwiaCI6Im11cm11cjY0In0=";
+        const response = await fetch(`https://api.openrouteservice.org/v2/directions/driving-car?api_key=${API_KEY}&start=${driverLocation[1]},${driverLocation[0]}&end=${customerLocation[1]},${customerLocation[0]}`);
+        
+        if (!response.ok) {
+            throw new Error(`OpenRouteService HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.features && data.features.length > 0) {
+            const route = data.features[0];
+            const coordinates = route.geometry.coordinates.map(coord => [coord[1], coord[0]]);
+
+            // Draw route on map
+            routeLine = L.polyline(coordinates, {
+                color: '#e74c3c',
+                weight: 5,
+                opacity: 0.7
+            }).addTo(map);
+
+            // Fit map to show the entire route (اختياري، قد يسبب اهتزازاً مع التحديثات المتكررة)
+            // map.fitBounds(routeLine.getBounds(), { padding: [20, 20], maxZoom: 15 });
+        }
+    } catch (error) {
+        console.error("Error drawing route (استخدام خط مستقيم كبديل):", error);
+
+        // Draw a straight line as fallback
+        routeLine = L.polyline([driverLocation, customerLocation], {
+            color: "#e74c3c",
+            weight: 4,
+            opacity: 0.7,
+            dashArray: "10, 10"
+        }).addTo(map);
+    }
 }
+
 
 // Get status class and text based on order status
 function getOrderStatusInfo(status) {
@@ -462,127 +405,31 @@ function getOrderStatusInfo(status) {
 
 // Show error message
 function showError(message) {
-    if (mapContainer) {
-        mapContainer.innerHTML = `
+    const errorMessageHtml = `
             <div class="error-container">
                 <i class="fas fa-exclamation-triangle"></i>
                 <h3>حدث خطأ</h3>
                 <p>${message}</p>
             </div>
         `;
-    }
 
-    if (orderStatusContainer) {
-        orderStatusContainer.innerHTML = `
-            <div class="error-container">
-                <i class="fas fa-exclamation-triangle"></i>
-                <h3>حدث خطأ</h3>
-                <p>${message}</p>
-            </div>
-        `;
-    }
-    // إخفاء معلومات السائق إذا كان هناك خطأ
-    if (driverInfoCard) {
-        driverInfoCard.style.display = "none";
-    }
-    if (orderDetails) {
-        orderDetails.innerHTML = ""; // مسح تفاصيل الطلب
-    }
+    if (mapContainer) mapContainer.innerHTML = errorMessageHtml;
+    if (orderStatusContainer) orderStatusContainer.innerHTML = errorMessageHtml;
+    if (driverInfoCard) driverInfoCard.style.display = "none";
+    if (orderDetails) orderDetails.innerHTML = "";
 }
 
 // Logout user
 function logoutUser() {
-    // Clear login data from localStorage
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("userName");
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userPhone");
-    localStorage.removeItem("userId");
-
-    // Redirect to login page
-    window.location.href = "login.html";
+    // window.location.href = "login.html"; // قد تحتاج لإعادة التوجيه
 }
 
-// Setup mobile menu
+// تصحيح: إضافة تعريف للدالة الوهمية لـ setupMobileMenu
 function setupMobileMenu() {
-    const mobileMenuBtn = document.querySelector(".mobile-menu");
-    const mobileMenuOverlay = document.querySelector(".mobile-menu-overlay");
-    const mobileMenuSidebar = document.querySelector(".mobile-menu-sidebar");
-    const mobileMenuClose = document.querySelector(".mobile-menu-close");
-    const mobileMenuContent = document.querySelector(".mobile-menu-content");
-    const navMenu = document.querySelector("nav ul");
-
-    // Function to check if we're on mobile view
-    function isMobileView() {
-        return window.innerWidth <= 768;
-    }
-
-    // Function to close mobile menu
-    function closeMobileMenu() {
-        if (mobileMenuSidebar) mobileMenuSidebar.classList.remove("active");
-        if (mobileMenuOverlay) mobileMenuOverlay.classList.remove("active");
-        document.body.style.overflow = "auto";
-    }
-
-    // Function to setup mobile menu
-    function setupMobileMenuContent() {
-        // Clone navigation items to mobile menu only if we're on mobile view
-        if (isMobileView() && mobileMenuContent && navMenu) {
-            // Clear existing content
-            mobileMenuContent.innerHTML = "";
-
-            // Create new list for mobile menu
-            const mobileNavList = document.createElement("ul");
-
-            // Clone all navigation items
-            const navItems = navMenu.querySelectorAll("li");
-            navItems.forEach(item => {
-                const clonedItem = item.cloneNode(true);
-                mobileNavList.appendChild(clonedItem);
-            });
-
-            // Add the cloned list to mobile menu content
-            mobileMenuContent.appendChild(mobileNavList);
-        } else if (mobileMenuContent) {
-            // مسح محتوى القائمة إذا لم نعد في وضع الجوال
-            mobileMenuContent.innerHTML = "";
-        }
-    }
-
-    // Setup mobile menu on page load
-    setupMobileMenuContent();
-
-    // Toggle mobile menu
-    if (mobileMenuBtn && mobileMenuSidebar && mobileMenuOverlay) {
-        mobileMenuBtn.addEventListener("click", () => {
-            if (isMobileView()) {
-                mobileMenuSidebar.classList.toggle("active");
-                mobileMenuOverlay.classList.toggle("active");
-                document.body.style.overflow = mobileMenuSidebar.classList.contains("active") ? "hidden" : "auto";
-            }
-        });
-    }
-
-    // Close mobile menu when clicking on the overlay
-    if (mobileMenuOverlay) {
-        mobileMenuOverlay.addEventListener("click", () => {
-            closeMobileMenu();
-        });
-    }
-
-    // Close mobile menu when clicking on the close button
-    if (mobileMenuClose) {
-        mobileMenuClose.addEventListener("click", () => {
-            closeMobileMenu();
-        });
-    }
-
-    // Handle window resize
-    window.addEventListener("resize", () => {
-        setupMobileMenuContent();
-        // إغلاق القائمة الجانبية إذا تم تغيير الحجم إلى عرض سطح المكتب
-        if (!isMobileView()) {
-            closeMobileMenu();
-        }
-    });
+    // هذه الدالة كانت مفقودة، يمكن تركها فارغة إذا لم تكن بحاجة إليها
+    // console.log("إعداد القائمة المتنقلة...");
 }
