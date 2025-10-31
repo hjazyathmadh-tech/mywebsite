@@ -1,7 +1,7 @@
 // accountant-login.js - تسجيل دخول المحاسب باستخدام Firebase v9+
 
-// استيراد الدوال اللازمة من zakarya.js
-import { accountantLogin, auth } from "./zakarya.js";
+// استيراد الدوال اللازمة من firebase.js
+import { accountantLogin, auth } from "./firebase.js";
 
 // مراقبة حالة المستخدم
 auth.onAuthStateChanged(async (user) => {

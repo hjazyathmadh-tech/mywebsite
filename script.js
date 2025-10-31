@@ -2012,7 +2012,7 @@ function logoutUser() {
   window.location.href = 'login.html';
 }
 
-import { sendOrder } from "./zakarya.js";
+import { sendOrder } from "./firebase.js";
 import { collection, getDocs, getFirestore } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
 // تحميل العروض من قاعدة البيانات

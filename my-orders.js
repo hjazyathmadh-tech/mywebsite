@@ -1,5 +1,5 @@
 // My Orders Page JavaScript
-import { auth, db } from "./zakarya.js";
+import { auth, db } from "./firebase.js";
 import { collection, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
 // DOM Elements

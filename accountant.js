@@ -11,7 +11,7 @@ import {
   doc,
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
-import { app, auth, db } from "./zakarya.js";
+import { app, auth, db } from "./firebase.js";
 
 
 

@@ -1,5 +1,5 @@
 // استيراد Firebase
-import { db, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, serverTimestamp } from "./zakarya.js";
+import { db, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, serverTimestamp } from "./firebase.js";
 
 console.log("تم تحميل accountant-offers.js بنجاح");
 
