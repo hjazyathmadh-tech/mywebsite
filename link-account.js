@@ -9,38 +9,50 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // دالة لمعالجة ربط الحساب بعد تسجيل الدخول عبر Google
 export async function handleGoogleLoginLinking() {
-    // عرض مربع حوار لسؤال المستخدم عن ربط الحساب
-    const shouldLink = confirm('هل ترغب في ربط حساب Google بحساب بريد إلكتروني وكلمة مرور لتسهيل تسجيل الدخول مستقبلاً؟');
-
-    if (shouldLink) {
-        // طلب كلمة المرور من المستخدم
-        const password = prompt('الرجاء إدخال كلمة مرور لربطها بحساب Google:');
-
+    try {
+      const user = auth.currentUser;
+  
+      if (!user) {
+        alert("لا يوجد مستخدم مسجل حالياً");
+        return;
+      }
+  
+      // ✅ تحقق أولاً هل الحساب مربوط مسبقاً ببريد/كلمة مرور
+      const hasEmailProvider = user.providerData.some(
+        (provider) => provider.providerId === "password"
+      );
+  
+      if (hasEmailProvider) {
+        console.log("✅ الحساب مربوط مسبقاً، لن يتم عرض مربع الحوار مرة أخرى.");
+        return; // لا نعرض مربع الحوار أبداً
+      }
+  
+      // 🪟 عرض مربع الحوار لأول مرة فقط
+      const shouldLink = confirm(
+        "هل ترغب في ربط حساب Google بحساب بريد إلكتروني وكلمة مرور لتسهيل تسجيل الدخول مستقبلاً؟"
+      );
+  
+      if (shouldLink) {
+        const password = prompt("الرجاء إدخال كلمة مرور لربطها بحساب Google:");
         if (password) {
-            try {
-                // الحصول على المستخدم الحالي
-                const user = auth.currentUser;
-
-                if (!user) {
-                    alert('لا يوجد مستخدم مسجل حالياً');
-                    return;
-                }
-
-                // ربط الحسابين
-                const linkResult = await linkGoogleAccountWithEmail(user.email, password);
-
-                if (linkResult.success) {
-                    alert(linkResult.message || 'تم ربط حساب Google بحساب البريد الإلكتروني بنجاح!');
-                } else {
-                    alert('لم يتم ربط الحساب: ' + linkResult.message);
-                }
-            } catch (error) {
-                console.error('خطأ في ربط الحساب:', error);
-                alert('حدث خطأ أثناء ربط الحساب: ' + error.message);
+          try {
+            const linkResult = await linkGoogleAccountWithEmail(user.email, password);
+  
+            if (linkResult.success) {
+              alert(linkResult.message || "تم ربط حساب Google بحساب البريد الإلكتروني بنجاح!");
+            } else {
+              alert("لم يتم ربط الحساب: " + linkResult.message);
             }
+          } catch (error) {
+            console.error("خطأ في ربط الحساب:", error);
+            alert("حدث خطأ أثناء ربط الحساب: " + error.message);
+          }
         }
+      }
+    } catch (error) {
+      console.error("❌ خطأ أثناء التحقق من ربط الحساب:", error);
     }
-}
+  }  
 
 // دالة لتحديث دالة تسجيل الدخول عبر Google
 export function updateGoogleLoginHandler() {
