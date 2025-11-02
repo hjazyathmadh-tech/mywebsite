@@ -30,7 +30,7 @@ export async function handleGoogleLoginLinking() {
                 const linkResult = await linkGoogleAccountWithEmail(user.email, password);
 
                 if (linkResult.success) {
-                    alert('تم ربط حساب Google بحساب البريد الإلكتروني بنجاح!');
+                    alert(linkResult.message || 'تم ربط حساب Google بحساب البريد الإلكتروني بنجاح!');
                 } else {
                     alert('لم يتم ربط الحساب: ' + linkResult.message);
                 }

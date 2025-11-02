@@ -274,6 +274,9 @@ export async function linkGoogleAccountWithEmail(email, password) {
     return { success: true, user: userCred.user };
   } catch (error) {
     console.error("❌ خطأ أثناء ربط الحسابين:", error);
+    if (error.code === "auth/provider-already-linked") {
+      return { success: true, message: "الحساب مرتبط مسبقًا، لا حاجة لإعادة الربط." };
+    }
     return { success: false, message: error.message };
   }
 }
