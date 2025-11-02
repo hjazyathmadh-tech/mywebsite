@@ -50,7 +50,9 @@ import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  EmailAuthProvider,
+  linkWithCredential
 } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
 import {
@@ -108,6 +110,8 @@ export {
   GoogleAuthProvider,
   signInWithPopup,
   sendPasswordResetEmail,
+  EmailAuthProvider,
+  linkWithCredential,
   ref,
   uploadBytes,
   getDownloadURL
@@ -239,6 +243,37 @@ export async function resetCustomerPassword(email) {
     return { success: true, message: "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني" };
   } catch (error) {
     console.error("❌ خطأ في إعادة تعيين كلمة المرور:", error);
+    return { success: false, message: error.message };
+  }
+}
+
+// دالة لربط حساب Google بحساب البريد وكلمة المرور
+export async function linkGoogleAccountWithEmail(email, password) {
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      return { success: false, message: "لا يوجد مستخدم مسجل حالياً" };
+    }
+
+    // التحقق من أن المستخدم مسجل عبر Google
+    const isGoogleProvider = user.providerData.some(
+      (provider) => provider.providerId === GoogleAuthProvider.PROVIDER_ID
+    );
+
+    if (!isGoogleProvider) {
+      return { success: false, message: "المستخدم الحالي لم يسجل الدخول عبر Google" };
+    }
+
+    // إنشاء بيانات اعتماد للبريد الإلكتروني وكلمة المرور
+    const credential = EmailAuthProvider.credential(email, password);
+    
+    // ربط الحسابين
+    const userCred = await linkWithCredential(user, credential);
+    console.log("✅ تم ربط الحسابين بنجاح:", userCred.user);
+    
+    return { success: true, user: userCred.user };
+  } catch (error) {
+    console.error("❌ خطأ أثناء ربط الحسابين:", error);
     return { success: false, message: error.message };
   }
 }
