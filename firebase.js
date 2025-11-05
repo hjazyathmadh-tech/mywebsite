@@ -240,10 +240,9 @@ export async function customerLoginWithGoogle() {
 export async function resetCustomerPassword(email) {
   try {
     await sendPasswordResetEmail(auth, email);
-    return { success: true, message: "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني" };
+    return { success: true };
   } catch (error) {
-    console.error("❌ خطأ في إعادة تعيين كلمة المرور:", error);
-    return { success: false, message: error.message };
+    throw new Error(error.message);
   }
 }
 
