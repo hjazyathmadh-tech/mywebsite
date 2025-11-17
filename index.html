@@ -257,19 +257,20 @@
                 <div class="contact-form">
                     <form id="contactForm">
                         <div class="form-group">
-                            <input type="text" id="name" placeholder="الاسم الكامل" required>
+                            <input type="text" name="name" id="name" placeholder="الاسم الكامل" required>
                         </div>
                         <div class="form-group">
-                            <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+                            <input type="email" name="email" id="email" placeholder="البريد الإلكتروني" required>
                         </div>
                         <div class="form-group">
-                            <input type="tel" id="phone" placeholder="رقم الهاتف" required>
+                            <input type="tel" name="phone" id="phone" placeholder="رقم الهاتف" required>
                         </div>
                         <div class="form-group">
-                            <textarea id="message" placeholder="رسالتك" required></textarea>
+                            <textarea name="message" id="message" placeholder="رسالتك" required></textarea>
                         </div>
                         <button type="submit" class="btn">إرسال</button>
                     </form>
+                    <!-- TODO: ربط النموذج مع EmailJS -->
                 </div>
             </div>
         </div>
@@ -389,10 +390,20 @@
     </div>
 
     <!-- 🔹 حمّل Firebase أولاً -->
+    <!-- مكتبة EmailJS لإرسال الرسائل -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        // تهيئة EmailJS مع المفتاح العام
+        (function(){
+            emailjs.init("fLSLRyrpieclcfHNZ");
+        })();
+    </script>
+
     <script type="module" src="firebase.js"></script>
 
     <!-- 🔹 بعدها سكربت الموقع الأساسي -->
     <script type="module" src="script.js"></script>
+    <script src="contact.js"></script>
     <script>
         // التحقق من تسجيل الدخول عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', function() {
